@@ -2,7 +2,9 @@
 
 ## Server
 
-``` cd server ```
+``` 
+cd server 
+```
 ```
 npm install
 ```
