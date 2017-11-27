@@ -1,0 +1,158 @@
+@import "https://fonts.googleapis.com/css?family=Open+Sans:400,600";
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%; }
+
+body {
+  color: #2c3e50;
+  font-size: 13px;
+  font-family: 'Open Sans', sans-serif; }
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0; }
+
+.app-messenger {
+  display: flex;
+  flex-direction: column; }
+  .app-messenger .header {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+    .app-messenger .header .left {
+      width: 200px; }
+      .app-messenger .header .left .actions {
+        line-height: 50px;
+        padding: 0 10px; }
+    .app-messenger .header .content {
+      flex-grow: 1; }
+      .app-messenger .header .content h2 {
+        line-height: 50px;
+        text-align: center; }
+    .app-messenger .header .right {
+      width: 300px; }
+      .app-messenger .header .right .user-bar {
+        line-height: 50px;
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 10px; }
+        .app-messenger .header .right .user-bar .profile-name {
+          padding-right: 10px; }
+        .app-messenger .header .right .user-bar .profile-image {
+          line-height: 50px; }
+          .app-messenger .header .right .user-bar .profile-image img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 10px 0 0 0; }
+  .app-messenger .main {
+    height: 100%;
+    display: flex;
+    overflow: hidden; }
+    .app-messenger .main .sidebar-left {
+      width: 200px;
+      border-right: 1px solid rgba(0, 0, 0, 0.05); }
+    .app-messenger .main .sidebar-right {
+      border-left: 1px solid rgba(0, 0, 0, 0.05);
+      width: 300px; }
+      .app-messenger .main .sidebar-right .title {
+        padding: 10px; }
+    .app-messenger .main .content {
+      flex-grow: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column; }
+      .app-messenger .main .content .messages {
+        flex-grow: 1; }
+      .app-messenger .main .content .messenger-input {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        height: 50px;
+        display: flex;
+        flex-direction: row; }
+        .app-messenger .main .content .messenger-input .text-input {
+          flex-grow: 1; }
+          .app-messenger .main .content .messenger-input .text-input textarea {
+            border: 0 none;
+            width: 100%;
+            height: 100%;
+            padding: 8px 15px; }
+        .app-messenger .main .content .messenger-input .actions button.send {
+          background: #2ecc71;
+          color: #FFF;
+          border: 0 none;
+          padding: 7px 15px;
+          line-height: 50px; }
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%; }
+  .messages .message {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 15px; }
+    .messages .message .message-user-image img {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%; }
+    .messages .message .message-body {
+      padding-left: 10px; }
+      .messages .message .message-body .message-text {
+        background: #2c3e50;
+        color: #FFF;
+        padding: 10px;
+        border-radius: 10px; }
+    .messages .message.me {
+      justify-content: flex-start; }
+      .messages .message.me .message-body .message-text {
+        background: #2ecc71;
+        color: #FFF; }
+
+.chanels .chanel {
+  display: flex;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 8px 0; }
+  .chanels .chanel .user-image {
+    width: 30px; }
+    .chanels .chanel .user-image img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%; }
+  .chanels .chanel .chanel-info {
+    flex-grow: 1;
+    padding-left: 8px; }
+    .chanels .chanel .chanel-info h2 {
+      font-size: 14px;
+      font-weight: 600; }
+    .chanels .chanel .chanel-info p {
+      font-size: 12px; }
+
+.members .member {
+  display: flex;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 8px; }
+  .members .member .user-image {
+    width: 30px; }
+    .members .member .user-image img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%; }
+  .members .member .member-info {
+    padding-left: 8px;
+    flex-grow: 1; }
+    .members .member .member-info h2 {
+      font-size: 14px; }
+    .members .member .member-info p {
+      font-size: 12px; }
+
+h2.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.8); }
+
+/*# sourceMappingURL=app.css.map */

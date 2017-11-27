@@ -12,3 +12,7 @@ yarn-error.log*
 server/node_modules
 app/node_modules
 server/dist
+server/package-lock.json
+
+app/node_modules
+app/package-lock.json
