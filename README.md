@@ -15,4 +15,8 @@ npm install
 npm run dev
 ```
 
-## Checkout Video tutorials: https://www.youtube.com/playlist?list=PLFaW_8zE4amPaLyz5AyVT8B_wfOYwd8x8
+## Tutorials
+* Checkout the video toturials list: https://www.youtube.com/playlist?list=PLFaW_8zE4amPaLyz5AyVT8B_wfOYwd8x8
+* My Facebook: https://www.facebook.com/TabvnGroup/
+* Youtube Chanel: https://youtube.com/TabvnChanel
+
