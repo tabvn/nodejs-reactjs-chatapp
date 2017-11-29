@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import avatar from '../images/avatar.png'
 import {OrderedMap} from 'immutable'
 import _ from 'lodash'
+import {ObjectID} from '../helpers/objectid'
 
 export default class Messenger extends Component{
 
@@ -12,14 +13,53 @@ export default class Messenger extends Component{
 
 		this.state = {
 			height: window.innerHeight,
+			newMessage: 'Hello there...'
 		}
 
 		this._onResize = this._onResize.bind(this);
 
 		this.addTestMessages = this.addTestMessages.bind(this);
+		this.handleSend = this.handleSend.bind(this)
+		this.renderMessage = this.renderMessage.bind(this);
 	}
 
+	renderMessage(message){
 
+		return <p dangerouslySetInnerHTML={{__html: _.get(message, 'body')}} />
+	}
+
+	handleSend(){
+
+		const {newMessage} = this.state;
+		const {store} = this.props;
+
+
+		// create new message
+
+		const messageId = new ObjectID().toString();
+		const channel = store.getActiveChannel();
+		const channelId = _.get(channel, '_id', null);
+		const currentUser = store.getCurrentUser();
+
+		const message = {
+			_id: messageId,
+			channelId: channelId,
+			body: newMessage,
+			author: _.get(currentUser, 'name', null),
+			avatar: avatar,
+			me: true,
+
+		};
+
+
+		store.addMessage(messageId, message);
+
+		this.setState({
+			newMessage: '',
+		})
+
+
+	}
 	_onResize(){
 
 		this.setState({
@@ -132,7 +172,7 @@ export default class Messenger extends Component{
 								<button>New message</button>
 							</div>
 						</div>
-						<div className="content"><h2>Title</h2></div>
+						<div className="content"><h2>{_.get(activeChannel, 'title', '')}</h2></div>
 						<div className="right">
 
 							<div className="user-bar">
@@ -155,7 +195,7 @@ export default class Messenger extends Component{
 
                                             store.setActiveChannelId(channel._id);
 
-                                        }} key={channel._id} className="chanel">
+                                        }} key={channel._id} className={classNames('chanel', {'active': _.get(activeChannel, '_id') === _.get(channel, '_id', null)})}>
                                             <div className="user-image">
                                                 <img src={avatar} alt="" />
                                             </div>
@@ -191,9 +231,7 @@ export default class Messenger extends Component{
 												<div className="message-body">
 													<div className="message-author">{message.me ? 'You ' : message.author} says:</div>
 													<div className="message-text">
-													<p>
-														{message.body}
-													</p>
+													{this.renderMessage(message)}
 													</div>
 												</div>
 											</div>
@@ -211,10 +249,24 @@ export default class Messenger extends Component{
 							<div className="messenger-input">
 
 								<div className="text-input">
-									<textarea placeholder="Write your messsage..." />
+									<textarea onKeyUp={(event) => {
+
+
+										if(event.key === 'Enter' && !event.shiftKey){
+											this.handleSend();
+										}
+										
+
+									}} onChange={(event) => {
+
+											
+
+											this.setState({newMessage: _.get(event, 'target.value')});
+
+									}} value={this.state.newMessage} placeholder="Write your messsage..." />
 								</div>
 								<div className="actions">
-									<button className="send">Send</button>
+									<button onClick={this.handleSend} className="send">Send</button>
 								</div>
 							</div>
 						</div>

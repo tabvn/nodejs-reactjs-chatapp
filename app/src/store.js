@@ -1,5 +1,5 @@
 import {OrderedMap} from 'immutable'
-
+import _ from 'lodash'
 
 const users = OrderedMap({
     '1': {_id: '1', name: "Toan", created: new Date()},
@@ -16,13 +16,18 @@ export default class Store{
         this.activeChannelId = null;
 
         this.user = {
-            _id: 0,
+            _id: '1',
             name: 'Toan',
             created: new Date(),
         }
 
     }
 
+
+    getCurrentUser(){
+
+        return this.user;
+    }
 
     setActiveChannelId(id){
 
@@ -36,10 +41,20 @@ export default class Store{
         return channel;
 
     }
-    addMessage(index, message = {}){
+    addMessage(id, message = {}){
 
-        this.messages = this.messages.set(`${index}`, message);
+        this.messages = this.messages.set(`${id}`, message);
 
+        // let's add new message id to current channel->messages.
+
+        const channelId = _.get(message, 'channelId');
+        if(channelId){
+
+            const channel = this.channels.get(channelId);
+
+            channel.messages = channel.messages.set(id, true);
+            this.channels = this.channels.set(channelId, channel);
+        }
         this.update();
 
     }
@@ -75,7 +90,7 @@ export default class Store{
 
             channel.members.map((value, key) => {
 
-                console.log("Debug key", key);
+                
 
                 const member = users.get(key);
 
