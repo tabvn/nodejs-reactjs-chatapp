@@ -1,3 +1,4 @@
+@import "font";
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600";
 @import 'variable';
 
@@ -27,12 +28,32 @@ body{
 		border-bottom: 1px solid $border-color;
 		.left{
 			width: $left-sidebar-width;
-			.actions{
+			position: relative;
+			.left-action{
+				position: absolute;
+				left: 8px;
+				top: 0;
+			}
+			.right-action{
+				position: absolute;
+				right: 8px;
+				top: 0;
+			}
+			h2{
 				line-height: $header-height;
-				padding: 0 10px;
-				button{
+				font-size: 14px;
+				font-weight: 600;
+				display: block;
+				text-align: center;
+			}
+			button{
+				background: none;
+				line-height: $header-height;
+				border: 0 none;
+				font-size: 20px;
+				cursor: pointer;
 
-				}
+
 			}
 		}
 		.content{
@@ -146,8 +167,7 @@ body{
 
 			}
 			.message-text{
-				background: $body-color;
-				color: #FFF;
+				background: rgba(0, 0 ,0, 0.05);
 				padding: 10px;
 				border-radius: 10px;
 			}
@@ -166,11 +186,13 @@ body{
 }
 .chanels{
 
+	overflow-y: auto;
+	height: 100%;
 	.chanel{
 		cursor: pointer;
 		display: flex;
 		border-bottom: 1px solid $border-color;
-		padding: 8px 0;
+		padding: 8px;
 		.user-image{
 			width: 30px;
 			img{
@@ -182,12 +204,16 @@ body{
 		.chanel-info{
 			flex-grow: 1;
 			padding-left: 8px;
+			padding-right: 8px;
+			overflow: hidden;
 			h2{
-				font-size: 14px;
-				font-weight: 600;
+				font-size: 13px;
+				font-weight: 400;
+				white-space: nowrap;
 			}
 			p{
 				font-size: 12px;
+				white-space: nowrap;
 			}
 		}
 		&.active{
@@ -227,4 +253,57 @@ h2.title{
 	font-size: 16px;
 	font-weight: 600;
 	color: rgba(0, 0 ,0,0.8);
+}
+.toolbar{
+	height: $header-height;
+	display: flex;
+	flex-direction: row;
+	position: relative;
+	label{
+		line-height: $header-height;
+	}
+	input{
+		height: 30px;
+		line-height: 30px;
+		margin-top: 10px;
+		border: 0 none;
+	}
+	.search-user{
+		min-width: 180px;
+		position: absolute;
+		left: 0;
+		top: $header-height;
+		z-index: 1;
+		border: 1px solid $border-color;
+		border-top: 0 none;
+		.user-list{
+			display: flex;
+			flex-direction: column;
+			.user{
+				display: flex;
+				flex-direction: row;
+				padding: 5px;
+				border-bottom: 1px solid $border-color;
+				cursor: pointer;
+				img{
+
+					width: 30px;
+					height: 30px;
+					border-radius: 50%;
+					margin-top: 10px;
+				}
+				h2{
+					padding-left: 8px;
+					flex-grow: 1;
+					font-size: 14px;
+				}
+				&:last-child{
+					border-bottom: 0 none;
+				}
+				&:hover{
+					background: rgba(0,0,0,0.02);
+				}
+			}
+		}
+	}
 }

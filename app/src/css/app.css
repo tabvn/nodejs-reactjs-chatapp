@@ -1,4 +1,43 @@
 @import "https://fonts.googleapis.com/css?family=Open+Sans:400,600";
+@font-face {
+  font-family: "chatapp";
+  src: url("./fonts/chatapp.eot");
+  src: url("./fonts/chatapp.eot?#iefix") format("embedded-opentype"), url("./fonts/chatapp.woff") format("woff"), url("./fonts/chatapp.ttf") format("truetype"), url("./fonts/chatapp.svg#chatapp") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+[data-icon]:before {
+  font-family: "chatapp" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "chatapp" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.icon-edit-modify-streamline:before {
+  content: "\61"; }
+
+.icon-settings-streamline-1:before {
+  content: "\63"; }
+
+.icon-paperplane:before {
+  content: "\62"; }
+
 body, html {
   margin: 0;
   padding: 0;
@@ -23,10 +62,28 @@ body {
     flex-direction: row;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
     .app-messenger .header .left {
-      width: 200px; }
-      .app-messenger .header .left .actions {
+      width: 200px;
+      position: relative; }
+      .app-messenger .header .left .left-action {
+        position: absolute;
+        left: 8px;
+        top: 0; }
+      .app-messenger .header .left .right-action {
+        position: absolute;
+        right: 8px;
+        top: 0; }
+      .app-messenger .header .left h2 {
         line-height: 50px;
-        padding: 0 10px; }
+        font-size: 14px;
+        font-weight: 600;
+        display: block;
+        text-align: center; }
+      .app-messenger .header .left button {
+        background: none;
+        line-height: 50px;
+        border: 0 none;
+        font-size: 20px;
+        cursor: pointer; }
     .app-messenger .header .content {
       flex-grow: 1; }
       .app-messenger .header .content h2 {
@@ -103,8 +160,7 @@ body {
     .messages .message .message-body {
       padding-left: 10px; }
       .messages .message .message-body .message-text {
-        background: #2c3e50;
-        color: #FFF;
+        background: rgba(0, 0, 0, 0.05);
         padding: 10px;
         border-radius: 10px; }
     .messages .message.me {
@@ -113,27 +169,34 @@ body {
         background: #2ecc71;
         color: #FFF; }
 
-.chanels .chanel {
-  cursor: pointer;
-  display: flex;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 8px 0; }
-  .chanels .chanel .user-image {
-    width: 30px; }
-    .chanels .chanel .user-image img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%; }
-  .chanels .chanel .chanel-info {
-    flex-grow: 1;
-    padding-left: 8px; }
-    .chanels .chanel .chanel-info h2 {
-      font-size: 14px;
-      font-weight: 600; }
-    .chanels .chanel .chanel-info p {
-      font-size: 12px; }
-  .chanels .chanel.active {
-    background: rgba(0, 0, 0, 0.05); }
+.chanels {
+  overflow-y: auto;
+  height: 100%; }
+  .chanels .chanel {
+    cursor: pointer;
+    display: flex;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 8px; }
+    .chanels .chanel .user-image {
+      width: 30px; }
+      .chanels .chanel .user-image img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%; }
+    .chanels .chanel .chanel-info {
+      flex-grow: 1;
+      padding-left: 8px;
+      padding-right: 8px;
+      overflow: hidden; }
+      .chanels .chanel .chanel-info h2 {
+        font-size: 13px;
+        font-weight: 400;
+        white-space: nowrap; }
+      .chanels .chanel .chanel-info p {
+        font-size: 12px;
+        white-space: nowrap; }
+    .chanels .chanel.active {
+      background: rgba(0, 0, 0, 0.05); }
 
 .members .member {
   display: flex;
@@ -157,5 +220,48 @@ h2.title {
   font-size: 16px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.8); }
+
+.toolbar {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  position: relative; }
+  .toolbar label {
+    line-height: 50px; }
+  .toolbar input {
+    height: 30px;
+    line-height: 30px;
+    margin-top: 10px;
+    border: 0 none; }
+  .toolbar .search-user {
+    min-width: 180px;
+    position: absolute;
+    left: 0;
+    top: 50px;
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 0 none; }
+    .toolbar .search-user .user-list {
+      display: flex;
+      flex-direction: column; }
+      .toolbar .search-user .user-list .user {
+        display: flex;
+        flex-direction: row;
+        padding: 5px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        cursor: pointer; }
+        .toolbar .search-user .user-list .user img {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          margin-top: 10px; }
+        .toolbar .search-user .user-list .user h2 {
+          padding-left: 8px;
+          flex-grow: 1;
+          font-size: 14px; }
+        .toolbar .search-user .user-list .user:last-child {
+          border-bottom: 0 none; }
+        .toolbar .search-user .user-list .user:hover {
+          background: rgba(0, 0, 0, 0.02); }
 
 /*# sourceMappingURL=app.css.map */
