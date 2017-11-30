@@ -25,6 +25,7 @@ export default class SearchUser extends Component{
 
 		const {store, search} = this.props;
 
+		
 		const users = store.searchUsers(search);
 
 

@@ -2,9 +2,9 @@ import {OrderedMap} from 'immutable'
 import _ from 'lodash'
 
 const users = OrderedMap({
-    '1': {_id: '1', name: "Toan Nguyen", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@toan.png'},
-    '2': {_id: '2', name: "Alexander Gov", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@alexander.png'},
-    '3': {_id: '3', name: "Kevin Smith", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@kevin.png'},
+    '1': {_id: '1', email: 'toan@tabvn.com', name: "Toan Nguyen Dinh", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@toan.png'},
+    '2': {_id: '2', email: 'alex@tabvn.com', name: "Alexander Gov", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@alexander.png'},
+    '3': {_id: '3', email: 'kevin@tabvn.com' ,name: "Kevin Smith", created: new Date(), avatar: 'https://api.adorable.io/avatars/100/abott@kevin.png'},
 })
 
 export default class Store{
@@ -16,16 +16,83 @@ export default class Store{
         this.activeChannelId = null;
 
 
-        // this is cursrnt logged in user 
-        this.user = {
-            _id: '1',
-            name: 'Toan',
-            created: new Date(),
-        }
+
+
+        this.user =  this.getUserFromLocalStorage();
 
     }
 
+    getUserFromLocalStorage(){
 
+        let user = null;
+        const data = localStorage.getItem('me');
+        try{
+
+            user = JSON.parse(data);
+        }
+        catch(err){
+
+            console.log(err);
+        }
+
+
+        return user;
+    }
+    setCurrentUser(user){
+
+        this.user = user;
+
+
+        if(user){
+            localStorage.setItem('me', JSON.stringify(user));
+        }
+
+        this.update();
+
+    }
+    signOut(){
+        this.user = null;
+        localStorage.removeItem('me');
+        this.update();
+    }
+    login(email, password){
+
+        const userEmail = _.toLower(email);
+
+        const _this = this;
+
+        return new Promise((resolve, reject) => {
+
+
+                const user = users.find((user) => user.email === userEmail);
+
+                if(user){
+                    _this.setCurrentUser(user);
+                }
+    
+
+                return user ? resolve(user) : reject("User not found");
+
+
+        });
+
+    }
+    removeMemberFromChannel(channel = null, user = null){
+
+        if(!channel || !user){
+            return;
+        }
+
+        const userId = _.get(user, '_id');
+        const channelId = _.get(channel, '_id');
+
+        channel.members = channel.members.remove(userId);
+
+        this.channels = this.channels.set(channelId, channel);
+
+        this.update();
+
+    }
     addUserToChannel(channelId, userId){
 
     
@@ -42,26 +109,16 @@ export default class Store{
     }
     searchUsers(search = ""){
 
+        const keyword = _.toLower(search);
         
         let searchItems = new OrderedMap();
+        const currentUser = this.getCurrentUser();
+        const currentUserId = _.get(currentUser, '_id');
 
         if(_.trim(search).length){
 
-            // do search in our users list
 
-            users.filter((user) => {
-
-
-                const name = _.get(user, 'name');
-                const userId = _.get(user, '_id');
-
-                if(_.includes(name, search)){
-
-                      searchItems = searchItems.set(userId, user);  
-                }
-
-               
-            })
+            searchItems = users.filter((user) => _.get(user, '_id') !== currentUserId && _.includes(_.toLower(_.get(user, 'name')), keyword));
 
 
         }
@@ -73,6 +130,8 @@ export default class Store{
         const channelId = _.get(channel, '_id');
         this.addChannel(channelId, channel);
         this.setActiveChannelId(channelId);
+
+        //console.log(JSON.stringify(this.channels.toJS()));
 
     }
 
@@ -95,7 +154,12 @@ export default class Store{
     }
     addMessage(id, message = {}){
 
-        this.messages = this.messages.set(`${id}`, message);
+        // we need add user object who is author of this message
+
+        const user = this.getCurrentUser();
+        message.user = user;
+
+        this.messages = this.messages.set(id, message);
 
         // let's add new message id to current channel->messages.
 
@@ -112,6 +176,8 @@ export default class Store{
         }
         this.update();
 
+       // console.log(JSON.stringify(this.messages.toJS()));
+
     }
     getMessages(){
 
@@ -120,20 +186,27 @@ export default class Store{
 
     getMessagesFromChannel(channel){
 
-        let messages = [];
+        let messages = new OrderedMap();
 
 
 
         if(channel){
-            channel.messages.map((value, key) => {
+
+
+            channel.messages.forEach((value,key) => {
+
+
+            
 
                 const message = this.messages.get(key);
-                messages.push(message);
+
+                messages = messages.set(key, message);
 
             });
+
         }
 
-        return messages;
+        return messages.valueSeq();
     }
 
     getMembersFromChannel(channel){
@@ -142,9 +215,10 @@ export default class Store{
 
         if(channel){
 
-            channel.members.map((value, key) => {
 
-            
+            channel.members.forEach((value, key) => {
+
+
                 const user = users.get(key);
 
                 const loggedUser = this.getCurrentUser();
@@ -153,7 +227,9 @@ export default class Store{
                     members = members.set(key, user);
                 }
 
-            
+
+
+
             });
         }
 

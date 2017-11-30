@@ -259,6 +259,17 @@ h2.title{
 	display: flex;
 	flex-direction: row;
 	position: relative;
+	span{
+		line-height: 20px;
+		height: 30px;
+		background: $primary-color;
+		color: #FFF;
+		cursor: pointer;
+		display: block;
+		border-radius: 3px;
+		margin: 10px 5px 0 0;
+		padding: 5px 8px;
+	}
 	label{
 		line-height: $header-height;
 	}
@@ -305,5 +316,121 @@ h2.title{
 				}
 			}
 		}
+	}
+}
+
+.user-bar{
+	position: relative;
+	button.login-btn{
+		height: $header-height;
+		border: 0 none;
+		background: none;
+		color: $primary-color;
+		font-weight: 600;
+		font-size: 14px;
+	}
+
+	.user-form{
+		background: #FFF;
+		box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.09);
+		position: absolute;
+		top: $header-height;
+		right: 0;
+		border: 1px solid $border-color;
+		border-top: 0 none;
+		padding: 10px;
+		.form-item{
+			label{
+				line-height: 30px;
+				min-width: 75px;
+				text-align: right;
+				margin-right: 8px;
+			}
+			input[type="email"],input[type="password"], input[type="text"]{
+
+				height: 30px;
+				line-height: 30px;
+
+			}
+		}
+		.form-actions{
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-end;
+		}
+	}
+	.user-menu{
+		background: #FFF;
+		box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.09);
+		min-width: 200px;
+		position: absolute;
+		right: 0;
+		top: $header-height;
+		border: 1px solid $border-color;
+		border-top: 0 none;
+		ul{
+			padding: 0;
+			margin: 0;
+			list-style: none;
+			li{
+				border-top: 1px solid $border-color;
+				padding: 8px;
+				button{
+					background: none;
+					border: 0 none;
+					display: block;
+					cursor: pointer;
+					text-align: center;
+					width: 100%;
+				}
+				&:hover{
+					background: rgba(0, 0, 0, 0.09);
+
+				}
+			}
+		}
+		h2{
+			font-size: 14px;
+			font-weight: 600;
+			margin: 0;
+			display: block;
+			text-align: center;
+		}
+	}
+}
+.form-item{
+	display: flex;
+	margin-bottom: 10px;
+	label{
+		font-weight: 600;
+	}
+	input[type="email"],input[type="password"], input[type="text"]{
+		border: 1px solid $border-color;
+		padding: 3px 8px;
+	}
+}
+.form-actions{
+	button{
+		border: 0 none;
+		padding: 7px 15px;
+		text-align: center;
+		&.primary{
+			background: $primary-color;
+			color: #FFF;
+		}
+	}
+}
+.app-message{
+	line-height: 1.5em;
+	padding: 10px;
+	font-size: 12px;
+	text-align: center;
+	border: 1px solid $primary-color;
+	border-radius: 5px;
+	margin: 0 0 10px 0;
+	&.error{
+		background: $danger-color;
+		color: #FFF;
+		border-color: $danger-color;
 	}
 }

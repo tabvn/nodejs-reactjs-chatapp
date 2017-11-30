@@ -226,6 +226,16 @@ h2.title {
   display: flex;
   flex-direction: row;
   position: relative; }
+  .toolbar span {
+    line-height: 20px;
+    height: 30px;
+    background: #2ecc71;
+    color: #FFF;
+    cursor: pointer;
+    display: block;
+    border-radius: 3px;
+    margin: 10px 5px 0 0;
+    padding: 5px 8px; }
   .toolbar label {
     line-height: 50px; }
   .toolbar input {
@@ -263,5 +273,97 @@ h2.title {
           border-bottom: 0 none; }
         .toolbar .search-user .user-list .user:hover {
           background: rgba(0, 0, 0, 0.02); }
+
+.user-bar {
+  position: relative; }
+  .user-bar button.login-btn {
+    height: 50px;
+    border: 0 none;
+    background: none;
+    color: #2ecc71;
+    font-weight: 600;
+    font-size: 14px; }
+  .user-bar .user-form {
+    background: #FFF;
+    box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.09);
+    position: absolute;
+    top: 50px;
+    right: 0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 0 none;
+    padding: 10px; }
+    .user-bar .user-form .form-item label {
+      line-height: 30px;
+      min-width: 75px;
+      text-align: right;
+      margin-right: 8px; }
+    .user-bar .user-form .form-item input[type="email"], .user-bar .user-form .form-item input[type="password"], .user-bar .user-form .form-item input[type="text"] {
+      height: 30px;
+      line-height: 30px; }
+    .user-bar .user-form .form-actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end; }
+  .user-bar .user-menu {
+    background: #FFF;
+    box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.09);
+    min-width: 200px;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 0 none; }
+    .user-bar .user-menu ul {
+      padding: 0;
+      margin: 0;
+      list-style: none; }
+      .user-bar .user-menu ul li {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 8px; }
+        .user-bar .user-menu ul li button {
+          background: none;
+          border: 0 none;
+          display: block;
+          cursor: pointer;
+          text-align: center;
+          width: 100%; }
+        .user-bar .user-menu ul li:hover {
+          background: rgba(0, 0, 0, 0.09); }
+    .user-bar .user-menu h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+      display: block;
+      text-align: center; }
+
+.form-item {
+  display: flex;
+  margin-bottom: 10px; }
+  .form-item label {
+    font-weight: 600; }
+  .form-item input[type="email"], .form-item input[type="password"], .form-item input[type="text"] {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 3px 8px; }
+
+.form-actions button {
+  border: 0 none;
+  padding: 7px 15px;
+  text-align: center; }
+  .form-actions button.primary {
+    background: #2ecc71;
+    color: #FFF; }
+
+.app-message {
+  line-height: 1.5em;
+  padding: 10px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #2ecc71;
+  border-radius: 5px;
+  margin: 0 0 10px 0; }
+  .app-message.error {
+    background: #e74c3c;
+    color: #FFF;
+    border-color: #e74c3c; }
 
 /*# sourceMappingURL=app.css.map */
