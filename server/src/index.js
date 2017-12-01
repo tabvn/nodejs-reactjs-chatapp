@@ -5,10 +5,11 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import {version} from '../package.json'
 import WebSocketServer, {Server} from 'uws';
+import AppRouter from './app-router'
+import Model from './models'
+import Database from './database'
 
-
-
-const PORT = 3000;
+const PORT = 3001;
 const app = express();
 app.server = http.createServer(app);
 
@@ -25,7 +26,25 @@ app.use(bodyParser.json({
 }));
 
 
+// Connect to Mongo Database
 
+new Database().connect().then((db) => {
+
+	console.log("Successful connected to database.")
+
+	app.db = db;
+	
+}).catch((err) => {
+
+
+	throw(err);
+});
+
+
+// End connect to Mongodb Database
+
+app.models = new Model(app);
+app.routers = new AppRouter(app);
 
 
 
@@ -34,7 +53,7 @@ app.wss = new Server({
 });
 
 
-
+/*
 let clients = [];
 
 
@@ -81,51 +100,11 @@ app.wss.on('connection', (connection) => {
 	});
 
 });
-
-
-app.get('/',(req, res) => {
-
-	res.json({
-		version:  version
-	});
-
-});
-
-app.get('/api/all_connections', (req, res, next) => {
-
-
-	return res.json({
-
-		people: clients,
-	});
-
-});
+*/
 
 
 
-setInterval(() => {
 
-
-	// each 3 seconds this function will be executed.
-
-	console.log(`There ${clients.length} people in the connection.`);
-
-
-	if(clients.length  > 0){
-
-		clients.forEach((client) => {
-
-			//console.log("CLient ID", client.userId);
-
-			const msg = `Hey ID: ${client.userId}: you got a new message from server`;
-
-			client.ws.send(msg);
-
-		});
-	}
-
-
-}, 3000)
 
 app.server.listen(process.env.PORT || PORT, () => {
         console.log(`App is running on port ${app.server.address().port}`);
