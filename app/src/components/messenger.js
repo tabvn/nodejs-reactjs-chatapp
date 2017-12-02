@@ -222,7 +222,12 @@ export default class Messenger extends Component{
 									this.setState({
 										searchUser: searchUserText,
 										showSearchUser: true,
+									}, () => {
+
+
+										store.startSearchUsers(searchUserText);
 									});
+
 
 
 
@@ -248,7 +253,7 @@ export default class Messenger extends Component{
 
 
 									}}
-									search={this.state.searchUser} store={store} /> : null }
+								 store={store} /> : null }
 
 							</div> : this.renderChannelTitle(activeChannel) }
 							

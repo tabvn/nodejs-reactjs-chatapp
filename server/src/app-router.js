@@ -68,6 +68,63 @@ export default class AppRouter{
 
 
 		/**
+		* @endpoint: /api/users/me
+		* @method: GET
+		**/
+
+		app.get('/api/users/me', (req, res, next) => {
+
+			let tokenId = req.get('authorization');
+
+			if(!tokenId){
+				// get token from query
+
+				tokenId = _.get(req, 'query.auth');
+			}
+
+
+			app.models.token.loadTokenAndUser(tokenId).then((token) => {
+
+				return res.json(token);
+
+			}).catch(err => {
+
+				return res.status(401).json({
+					error: err
+				})
+			});
+
+			
+
+		});
+
+
+		/**
+		* @endpoint: /api/users/search
+		* @method: POST
+		**/
+
+		app.post('/api/users/search', (req, res, next) => {
+
+
+			const keyword = _.get(req, 'body.search', '');
+
+			app.models.user.search(keyword).then((results) => {
+
+
+				return res.status(200).json(results);
+			}).catch((err) => {
+
+				return res.status(404).json({
+					error: 'Not found.'
+				})
+			})
+
+		});
+
+
+
+		/**
 		* @endpoint: /api/users/:id
 		* @method: GET
 		**/

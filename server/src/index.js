@@ -14,7 +14,7 @@ const app = express();
 app.server = http.createServer(app);
 
 
-app.use(morgan('dev'));
+//app.use(morgan('dev'));
 
 
 app.use(cors({
