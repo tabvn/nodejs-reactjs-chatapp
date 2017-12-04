@@ -26,6 +26,12 @@ app.use(bodyParser.json({
 }));
 
 
+
+app.wss = new Server({
+	server: app.server
+});
+
+
 // Connect to Mongo Database
 
 new Database().connect().then((db) => {
@@ -48,9 +54,6 @@ app.routers = new AppRouter(app);
 
 
 
-app.wss = new Server({
-	server: app.server
-});
 
 
 /*

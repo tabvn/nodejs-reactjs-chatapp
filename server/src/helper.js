@@ -5,3 +5,11 @@ export const isEmail = (emaill) => {
 
 	return regex.test(emaill);
 }
+
+export const toString = (id = "") => {
+
+
+	return `${id}`;
+		
+
+}

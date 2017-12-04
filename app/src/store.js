@@ -1,7 +1,7 @@
 import {OrderedMap} from 'immutable'
 import _ from 'lodash'
 import Service from './service'
-
+import Realtime from './realtime'
 
 export default class Store{
     constructor(appComponent){
@@ -25,9 +25,23 @@ export default class Store{
 
 
 
+        this.realtime = new Realtime(this);
+
 
     }
 
+    addUserToCache(user){
+
+        user.avatar = this.loadUserAvatar(user);
+        const id = `${user._id}`
+        this.users = this.users.set(id, user);
+
+
+    }
+
+    getUserTokenId(){
+        return _.get(this.token, '_id', null);
+    }
     loadUserAvatar(user){
 
         return `https://api.adorable.io/avatars/100/${user._id}.png`
@@ -69,7 +83,7 @@ export default class Store{
         }).catch((err) => {
 
 
-            console.log("searching errror", err);
+            //console.log("searching errror", err);
         })
 
     }
@@ -220,7 +234,7 @@ export default class Store{
                 this.setCurrentUser(user);
                 this.setUserToken(accessToken);
 
-                console.log("Got user login callback from the server: ", accessToken);
+                //console.log("Got user login callback from the server: ", accessToken);
 
 
 
@@ -239,20 +253,7 @@ export default class Store{
 
         });
 
-        /*return new Promise((resolve, reject) => {
-
-
-                const user = users.find((user) => user.email === userEmail);
-
-                if(user){
-                    _this.setCurrentUser(user);
-                }
-    
-
-                return user ? resolve(user) : reject("User not found");
-
-
-        }); */
+       
 
     }
     removeMemberFromChannel(channel = null, user = null){
@@ -332,11 +333,30 @@ export default class Store{
 
             let channel = this.channels.get(channelId);
 
-            channel.isNew = false;
+            
             channel.lastMessage = _.get(message, 'body', '');
 
+            // now send this channel info to the server
+            const obj = {
+
+                action: 'create_channel',
+                payload: channel,
+            }
+            this.realtime.send(obj);
+
+
+            console.log("channel:", channel);
+
+
             channel.messages = channel.messages.set(id, true);
+
+
+
+            channel.isNew = false;
             this.channels = this.channels.set(channelId, channel);
+
+
+
         }
         this.update();
 

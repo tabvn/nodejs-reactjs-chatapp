@@ -80,7 +80,7 @@ export default class Token{
 	findTokenById(id, cb = () => {}){
 
 
-		console.log("Begin query into database!!!!!!");
+		//console.log("Begin query into database!!!!!!");
 
 
 		const idObject = new ObjectID(id);

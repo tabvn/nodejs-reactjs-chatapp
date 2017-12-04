@@ -17,6 +17,18 @@ export default class User{
 	}
 
 
+	find(query = {}, options = {}){
+
+
+		return new Promise((resolve, reject) => {
+
+			this.app.db.collection('users').find(query, options).toArray((err, users) => {
+
+				return err ? reject(err) : resolve(users);
+			})
+
+		});	
+	}
 
 	search(q= ""){
 
@@ -168,7 +180,7 @@ export default class User{
 
 	findUserById(id, callback = () => {}){
 
-		console.log("Begin query in database");
+		//console.log("Begin query in database");
 
 		if(!id){
 			return callback({message: "User not found"}, null);
