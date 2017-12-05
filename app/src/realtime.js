@@ -2,166 +2,197 @@ import _ from 'lodash'
 import {OrderedMap} from 'immutable'
 
 
-export default class Realtime{
+export default class Realtime {
 
 
-	constructor(store){
+    constructor(store) {
 
-		this.store = store;
-		this.ws = null;
-		this.isConnected = false;
+        this.store = store;
+        this.ws = null;
+        this.isConnected = false;
 
-		this.connect();
-	}
+        this.connect();
+    }
 
 
-	decodeMessage(msg){
+    decodeMessage(msg) {
 
-		let message = {};
+        let message = {};
 
-		try{
+        try {
 
-			message = JSON.parse(msg);
+            message = JSON.parse(msg);
 
-		}
-		catch(err){
+        }
+        catch (err) {
 
-			console.log(err);
-		}
+            console.log(err);
+        }
 
-		return message;
-	}
-	readMessage(msg){
+        return message;
+    }
 
-		const store = this.store;
+    readMessage(msg) {
 
-		const message= this.decodeMessage(msg);
+        const store = this.store;
+        const currentUser = store.getCurrentUser();
+        const currentUserId = _.toString(_.get(currentUser, '_id'));
+        const message = this.decodeMessage(msg);
 
-		const action = _.get(message, 'action', '');
+        const action = _.get(message, 'action', '');
 
-		const payload= _.get(message, 'payload');
+        const payload = _.get(message, 'payload');
 
-		switch(action){
+        switch (action) {
 
+            case 'message_added':
 
-			case 'channel_added':
+                let user = _.get(payload, 'user');
 
-				// to do check payload object and insert new channel to store.
-				const channelId = `${payload._id}`;
-				const userId = `${payload.userId}`;
 
-				const users = _.get(payload, 'users', []);
+                // add user to cache
+                user = store.addUserToCache(user);
 
+                const messageObject = {
+                    _id: payload._id,
+                    body: _.get(payload, 'body', ''),
+                    userId: _.get(payload, 'userId'),
+                    channelId: _.get(payload, 'channelId'),
+                    created: _.get(payload, 'created', new Date()),
+                    me: currentUserId === _.toString(_.get(payload, 'userId')),
+                    user: user,
 
-				let channel = {
-					_id: channelId,
-	                title: _.get(payload, 'title', ''),
-	                isNew: false,
-	                lastMessage: _.get(payload, 'lastMessage'),
-	                members: new OrderedMap(),
-	                messages: new OrderedMap(),
-	                userId: userId,
-	                created: new Date(),
-				};
+                };
 
-				_.each(users, (user) => {
+                console.log("MessageObject: ", messageObject);
 
-					// add this user to store.users collection
+                store.setMessage(messageObject);
 
-					const memberId = `${user._id}`;
+                break;
 
-					this.store.addUserToCache(user);
+            case 'channel_added':
 
-					channel.members = channel.members.set(memberId, true);
+                // to do check payload object and insert new channel to store.
+                this.onAddChannel(payload);
 
+                break;
 
-				});
+            default:
 
+                break;
+        }
 
 
-				store.addChannel(channelId, channel);
+    }
 
-				break;
+    onAddChannel(payload) {
 
-			default:
+        const store = this.store;
 
-				break;
-		}
+        const channelId = `${payload._id}`;
+        const userId = `${payload.userId}`;
 
+        const users = _.get(payload, 'users', []);
 
-	}
-	send(msg = {}){
 
-		const isConnected = this.isConnected;
+        let channel = {
+            _id: channelId,
+            title: _.get(payload, 'title', ''),
+            isNew: false,
+            lastMessage: _.get(payload, 'lastMessage'),
+            members: new OrderedMap(),
+            messages: new OrderedMap(),
+            userId: userId,
+            created: new Date(),
+        };
 
-		if(isConnected){
+        _.each(users, (user) => {
 
-			const msgString = JSON.stringify(msg);
+            // add this user to store.users collection
 
-			this.ws.send(msgString);
-		}
+            const memberId = `${user._id}`;
 
-	}
-	authentication(){
-		const store = this.store;
+            this.store.addUserToCache(user);
 
-		const tokenId = store.getUserTokenId();
+            channel.members = channel.members.set(memberId, true);
 
-		if(tokenId){
 
-			const message = {
-				action: 'auth',
-				payload: `${tokenId}`
-			}
+        });
 
-			this.send(message);
-		}
-		
-	}
 
+        store.addChannel(channelId, channel);
 
-	connect(){
+    }
 
-		//console.log("Begin connecting to server via websocket.");
+    send(msg = {}) {
 
-		const ws = new WebSocket('ws://localhost:3001');
-		this.ws = ws;
+        const isConnected = this.isConnected;
 
-		
-		ws.onopen = () => {
+        if (isConnected) {
 
+            const msgString = JSON.stringify(msg);
 
-			//console.log("You are connected");
+            this.ws.send(msgString);
+        }
 
-			// let tell to the server who are you ?
+    }
 
-			this.isConnected = true;
+    authentication() {
+        const store = this.store;
 
-			this.authentication();
+        const tokenId = store.getUserTokenId();
 
+        if (tokenId) {
 
+            const message = {
+                action: 'auth',
+                payload: `${tokenId}`
+            }
 
-			ws.onmessage = (event) => {
+            this.send(message);
+        }
 
-				this.readMessage(_.get(event, 'data'));
+    }
 
 
-				console.log("Mesage from the server: ", event.data);
-			}
+    connect() {
 
+        //console.log("Begin connecting to server via websocket.");
 
+        const ws = new WebSocket('ws://localhost:3001');
+        this.ws = ws;
 
 
-		}
+        ws.onopen = () => {
 
-		ws.onclose = () => {
 
-			//console.log("You disconnected!!!");
-			this.isConnected =false;
+            //console.log("You are connected");
 
-		}
+            // let tell to the server who are you ?
 
+            this.isConnected = true;
 
+            this.authentication();
 
-	}
+
+            ws.onmessage = (event) => {
+
+                this.readMessage(_.get(event, 'data'));
+
+
+                console.log("Mesage from the server: ", event.data);
+            }
+
+
+        }
+
+        ws.onclose = () => {
+
+            //console.log("You disconnected!!!");
+            this.isConnected = false;
+
+        }
+
+
+    }
 }

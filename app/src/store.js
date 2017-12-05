@@ -3,8 +3,8 @@ import _ from 'lodash'
 import Service from './service'
 import Realtime from './realtime'
 
-export default class Store{
-    constructor(appComponent){
+export default class Store {
+    constructor(appComponent) {
 
         this.app = appComponent;
         this.service = new Service();
@@ -13,10 +13,9 @@ export default class Store{
         this.activeChannelId = null;
 
 
-
         this.token = this.getTokenFromLocalStore();
 
-        this.user =  this.getUserFromLocalStorage();
+        this.user = this.getUserFromLocalStorage();
         this.users = new OrderedMap();
 
         this.search = {
@@ -24,36 +23,40 @@ export default class Store{
         }
 
 
-
         this.realtime = new Realtime(this);
 
 
     }
 
-    addUserToCache(user){
+    addUserToCache(user) {
 
         user.avatar = this.loadUserAvatar(user);
-        const id = `${user._id}`
+        const id = _.toString(user._id);
         this.users = this.users.set(id, user);
 
 
+        return user;
+
+
     }
 
-    getUserTokenId(){
+    getUserTokenId() {
         return _.get(this.token, '_id', null);
     }
-    loadUserAvatar(user){
+
+    loadUserAvatar(user) {
 
         return `https://api.adorable.io/avatars/100/${user._id}.png`
     }
-    startSearchUsers(q = ""){
+
+    startSearchUsers(q = "") {
 
         // query to backend servr and get list of users.
         const data = {search: q};
 
         this.search.users = this.search.users.clear();
 
-        this.service.post('api/users/search', data).then((response) =>  {
+        this.service.post('api/users/search', data).then((response) => {
 
             // list of users matched.
             const users = _.get(response, 'data', []);
@@ -68,9 +71,6 @@ export default class Store{
 
                 this.users = this.users.set(userId, user);
                 this.search.users = this.search.users.set(userId, user);
-
-
-
 
 
             });
@@ -88,9 +88,9 @@ export default class Store{
 
     }
 
-    setUserToken(accessToken){
+    setUserToken(accessToken) {
 
-        if(!accessToken){
+        if (!accessToken) {
 
             this.localStorage.removeItem('token');
             this.token = null;
@@ -102,23 +102,24 @@ export default class Store{
         localStorage.setItem('token', JSON.stringify(accessToken));
 
     }
-    getTokenFromLocalStore(){
+
+    getTokenFromLocalStore() {
 
 
-        if(this.token){
+        if (this.token) {
             return this.token;
         }
 
         let token = null;
 
         const data = localStorage.getItem('token');
-        if(data){
+        if (data) {
 
-            try{
+            try {
 
                 token = JSON.parse(data);
             }
-            catch(err){
+            catch (err) {
 
                 console.log(err);
             }
@@ -126,21 +127,22 @@ export default class Store{
 
         return token;
     }
-    getUserFromLocalStorage(){
+
+    getUserFromLocalStorage() {
 
         let user = null;
         const data = localStorage.getItem('me');
-        try{
+        try {
 
             user = JSON.parse(data);
         }
-        catch(err){
+        catch (err) {
 
             console.log(err);
         }
 
 
-        if(user){
+        if (user) {
 
             // try to connect to backend server and verify this user is exist.
             const token = this.getTokenFromLocalStore();
@@ -151,7 +153,7 @@ export default class Store{
                     authorization: tokenId,
                 }
             }
-            this.service.get('api/users/me',options).then((response) => {
+            this.service.get('api/users/me', options).then((response) => {
 
                 // this mean user is logged with this token id.
 
@@ -166,11 +168,12 @@ export default class Store{
                 this.signOut();
 
             });
-            
+
         }
         return user;
     }
-    setCurrentUser(user){
+
+    setCurrentUser(user) {
 
 
         // set temporary user avatar image url
@@ -178,8 +181,7 @@ export default class Store{
         this.user = user;
 
 
-
-        if(user){
+        if (user) {
             localStorage.setItem('me', JSON.stringify(user));
 
             // save this user to our users collections in local 
@@ -190,7 +192,8 @@ export default class Store{
         this.update();
 
     }
-    signOut(){
+
+    signOut() {
 
         const userId = `${_.get(this.user, '_id', null)}`;
 
@@ -198,30 +201,28 @@ export default class Store{
         localStorage.removeItem('me');
         localStorage.removeItem('token');
 
-        if(userId){
-             this.users = this.users.remove(userId);
+        if (userId) {
+            this.users = this.users.remove(userId);
         }
-       
+
         this.update();
     }
 
-    login(email = null, password = null){
+    login(email = null, password = null) {
 
         const userEmail = _.toLower(email);
-
-
 
 
         const user = {
             email: userEmail,
             password: password,
         }
-        console.log("Ttrying to login with user info", user);
+        //console.log("Ttrying to login with user info", user);
 
 
         return new Promise((resolve, reject) => {
 
-            
+
             // we call to backend service and login with user data
 
             this.service.post('api/users/login', user).then((response) => {
@@ -234,11 +235,11 @@ export default class Store{
                 this.setCurrentUser(user);
                 this.setUserToken(accessToken);
 
+                // call to realtime and connect again to socket server with this user
+
+                this.realtime.connect();
+
                 //console.log("Got user login callback from the server: ", accessToken);
-
-
-
-
 
 
             }).catch((err) => {
@@ -253,12 +254,12 @@ export default class Store{
 
         });
 
-       
 
     }
-    removeMemberFromChannel(channel = null, user = null){
 
-        if(!channel || !user){
+    removeMemberFromChannel(channel = null, user = null) {
+
+        if (!channel || !user) {
             return;
         }
 
@@ -272,12 +273,13 @@ export default class Store{
         this.update();
 
     }
-    addUserToChannel(channelId, userId){
 
-    
+    addUserToChannel(channelId, userId) {
+
+
         const channel = this.channels.get(channelId);
 
-        if(channel){
+        if (channel) {
 
             // now add this member id to channels members.
             channel.members = channel.members.set(userId, true);
@@ -286,11 +288,13 @@ export default class Store{
         }
 
     }
-    getSearchUsers(){
+
+    getSearchUsers() {
 
         return this.search.users.valueSeq();
     }
-    onCreateNewChannel(channel = {}){
+
+    onCreateNewChannel(channel = {}) {
 
         const channelId = _.get(channel, '_id');
         this.addChannel(channelId, channel);
@@ -300,26 +304,60 @@ export default class Store{
 
     }
 
-    getCurrentUser(){
+    getCurrentUser() {
 
         return this.user;
     }
 
-    setActiveChannelId(id){
+    setActiveChannelId(id) {
 
         this.activeChannelId = id;
         this.update();
 
     }
-    getActiveChannel(){
+
+    getActiveChannel() {
 
         const channel = this.activeChannelId ? this.channels.get(this.activeChannelId) : this.channels.first();
         return channel;
 
     }
-    addMessage(id, message = {}){
+
+    setMessage(message) {
+
+        const id = _.toString(_.get(message, '_id'));
+        this.messages = this.messages.set(id, message);
+        const channelId = _.toString(message.channelId);
+        const channel = this.channels.get(channelId);
+
+        if (channel) {
+            channel.messages = channel.messages.set(id, true);
+        } else {
+
+            // fetch to the server with channel info
+            this.service.get(`api/channels/${channelId}`).then((response) => {
+
+
+                const channel = _.get(response, 'data');
+
+                /*const users = _.get(channel, 'users');
+                _.each(users, (user) => {
+
+                    this.addUserToCache(user);
+                });*/
+
+                this.realtime.onAddChannel(channel);
+
+
+            })
+        }
+        this.update();
+    }
+
+    addMessage(id, message = {}) {
 
         // we need add user object who is author of this message
+
 
         const user = this.getCurrentUser();
         message.user = user;
@@ -329,11 +367,11 @@ export default class Store{
         // let's add new message id to current channel->messages.
 
         const channelId = _.get(message, 'channelId');
-        if(channelId){
+        if (channelId) {
 
             let channel = this.channels.get(channelId);
 
-            
+
             channel.lastMessage = _.get(message, 'body', '');
 
             // now send this channel info to the server
@@ -341,46 +379,50 @@ export default class Store{
 
                 action: 'create_channel',
                 payload: channel,
-            }
+            };
             this.realtime.send(obj);
 
 
-            console.log("channel:", channel);
+            //console.log("channel:", channel);
 
+            // send to the server via websocket to creawte new message and notify to other members.
+
+            this.realtime.send(
+                {
+                    action: 'create_message',
+                    payload: message,
+                }
+            );
 
             channel.messages = channel.messages.set(id, true);
-
 
 
             channel.isNew = false;
             this.channels = this.channels.set(channelId, channel);
 
 
-
         }
         this.update();
 
-       // console.log(JSON.stringify(this.messages.toJS()));
+        // console.log(JSON.stringify(this.messages.toJS()));
 
     }
-    getMessages(){
+
+    getMessages() {
 
         return this.messages.valueSeq();
     }
 
-    getMessagesFromChannel(channel){
+    getMessagesFromChannel(channel) {
 
         let messages = new OrderedMap();
 
 
-
-        if(channel){
-
-
-            channel.messages.forEach((value,key) => {
+        if (channel) {
 
 
-            
+            channel.messages.forEach((value, key) => {
+
 
                 const message = this.messages.get(key);
 
@@ -393,15 +435,14 @@ export default class Store{
         return messages.valueSeq();
     }
 
-    getMembersFromChannel(channel){
+    getMembersFromChannel(channel) {
 
         let members = new OrderedMap();
 
-        if(channel){
+        if (channel) {
 
 
             channel.members.forEach((value, key) => {
-
 
 
                 const userId = `${key}`;
@@ -409,11 +450,9 @@ export default class Store{
 
                 const loggedUser = this.getCurrentUser();
 
-                if(_.get(loggedUser, '_id') !== _.get(user, '_id')){
+                if (_.get(loggedUser, '_id') !== _.get(user, '_id')) {
                     members = members.set(key, user);
                 }
-
-
 
 
             });
@@ -421,12 +460,14 @@ export default class Store{
 
         return members.valueSeq();
     }
-    addChannel(index, channel = {}){
+
+    addChannel(index, channel = {}) {
         this.channels = this.channels.set(`${index}`, channel);
 
         this.update();
     }
-    getChannels(){
+
+    getChannels() {
 
         //return this.channels.valueSeq();
 
@@ -438,7 +479,7 @@ export default class Store{
         return this.channels.valueSeq();
     }
 
-    update(){
+    update() {
 
         this.app.forceUpdate()
     }

@@ -3,81 +3,123 @@ import {toString} from '../helper'
 import {ObjectID} from 'mongodb'
 import {OrderedMap} from 'immutable'
 
-export default class Channel{
+export default class Channel {
 
-	constructor(app){
+    constructor(app) {
 
-		this.app = app;
+        this.app = app;
 
-		this.channels = new OrderedMap();
-	}
-
-
-	load(id){
+        this.channels = new OrderedMap();
+    }
 
 
-	}
-	create(obj){
+    load(id) {
 
-		
-		return new Promise((resolve, reject) => {
-
-			let id = toString(_.get(obj, '_id'));
+        return new Promise((resolve, reject) => {
 
 
-		
-
-			let idObject = id ? new ObjectID(id) : new ObjectID();
+            id = _.toString(id);
 
 
-			let members = [];
+            // first find in cache
+            const channelFromCache = this.channels.get(id);
 
-			_.each(_.get(obj, 'members', []), (value, key) => {
+            if (channelFromCache) {
 
-			
-				const memberObjectId = new ObjectID(key);
-				members.push(memberObjectId);
-			});
+				return resolve(channelFromCache);
+            }
 
-			
 
-			let userIdObject = null;
+            // let find in db
 
-			let userId = _.get(obj, 'userId', null);
-			if(userId){
-				userIdObject = new ObjectID(userId);
-			}
+            this.findById(id).then((c) => {
+                return resolve(c);
+
+            }).catch((err) => {
+
+
+                return reject(err);
+            })
 
 
 
-			const channel = {
+        })
 
-				_id: idObject,
-				title: _.get(obj, 'title', ''),
-				lastMessage: _.get(obj, 'lastMessage', ''),
-				created: new Date(),
-				userId: userIdObject,
-				members: members,
-			}
+    }
+
+    findById(id){
+
+        return new Promise((resolve, reject) => {
 
 
-			this.app.db.collection('channels').insertOne(channel, (err, info) => {
+            this.app.db.collection('channels').findOne({_id: new ObjectID(id)}, (err, result) => {
 
-				if(!err){
+                    if(err || !result){
 
-					const channelId = channel._id.toString();
+                        return reject(err ? err : "Not found");
+                    }
 
-					this.channels = this.channels.set(channelId, channel);
-				}
-				return err ? reject(err) : resolve(channel);
-			});
+                    return resolve(result);
 
-
+            });
 
 
-		});
+        })
+    }
+    create(obj) {
 
 
+        return new Promise((resolve, reject) => {
 
-	}
+            let id = toString(_.get(obj, '_id'));
+
+
+            let idObject = id ? new ObjectID(id) : new ObjectID();
+
+
+            let members = [];
+
+            _.each(_.get(obj, 'members', []), (value, key) => {
+
+
+                const memberObjectId = new ObjectID(key);
+                members.push(memberObjectId);
+            });
+
+
+            let userIdObject = null;
+
+            let userId = _.get(obj, 'userId', null);
+            if (userId) {
+                userIdObject = new ObjectID(userId);
+            }
+
+
+            const channel = {
+
+                _id: idObject,
+                title: _.get(obj, 'title', ''),
+                lastMessage: _.get(obj, 'lastMessage', ''),
+                created: new Date(),
+                userId: userIdObject,
+                members: members,
+            }
+
+
+            this.app.db.collection('channels').insertOne(channel, (err, info) => {
+
+                if (!err) {
+
+                    const channelId = channel._id.toString();
+
+                    this.channels = this.channels.set(channelId, channel);
+                }
+                return err ? reject(err) : resolve(channel);
+            });
+
+
+        });
+
+
+    }
 }

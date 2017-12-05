@@ -6,356 +6,352 @@ import {OrderedMap} from 'immutable'
 
 const saltRound = 10;
 
-export default class User{
+export default class User {
 
-	constructor(app){
+    constructor(app) {
 
-		this.app = app;
-		
-		this.users = new OrderedMap();
-		
-	}
+        this.app = app;
 
+        this.users = new OrderedMap();
 
-	find(query = {}, options = {}){
+    }
 
 
-		return new Promise((resolve, reject) => {
+    find(query = {}, options = {}) {
 
-			this.app.db.collection('users').find(query, options).toArray((err, users) => {
 
-				return err ? reject(err) : resolve(users);
-			})
+        return new Promise((resolve, reject) => {
 
-		});	
-	}
+            this.app.db.collection('users').find(query, options).toArray((err, users) => {
 
-	search(q= ""){
+                return err ? reject(err) : resolve(users);
+            })
 
-		return new Promise((resolve, reject) => {
+        });
+    }
 
+    search(q = "") {
 
-			const regex = new RegExp(q, 'i');
+        return new Promise((resolve, reject) => {
 
-			const query = {
-				$or: [
-					{name: {$regex: regex}},
-					{email: {$regex: regex}},
-				],
-			};
 
-			this.app.db.collection('users').find(query, {_id: true, name: true, created: true}).toArray((err, results) => {
+            const regex = new RegExp(q, 'i');
 
+            const query = {
+                $or: [
+                    {name: {$regex: regex}},
+                    {email: {$regex: regex}},
+                ],
+            };
 
-				if(err || !results || !results.length){
+            this.app.db.collection('users').find(query, {
+                _id: true,
+                name: true,
+                created: true
+            }).toArray((err, results) => {
 
-					return reject({message: "User not found."})
-				}
 
-				return resolve(results);
-			});
+                if (err || !results || !results.length) {
 
+                    return reject({message: "User not found."})
+                }
 
+                return resolve(results);
+            });
 
-		});
-	}
 
-	login(user){
+        });
+    }
 
-		const email = _.get(user, 'email', '');
-		const password = _.get(user, 'password', '');
+    login(user) {
 
+        const email = _.get(user, 'email', '');
+        const password = _.get(user, 'password', '');
 
-		return new Promise((resolve, reject) => {
 
+        return new Promise((resolve, reject) => {
 
-			if(!password || !email || !isEmail(email)){
-				return reject({message: "An error login."})
-			}
 
+            if (!password || !email || !isEmail(email)) {
+                return reject({message: "An error login."})
+            }
 
-			// find in database with email 
 
-			this.findUserByEmail(email, (err, result) => {
+            // find in database with email
 
+            this.findUserByEmail(email, (err, result) => {
 
-				if(err){
 
-					return reject({message: "Login Error."});
-				}
+                if (err) {
 
+                    return reject({message: "Login Error."});
+                }
 
-				// if found user we have to compare the password hash and plain text.
 
+                // if found user we have to compare the password hash and plain text.
 
-				const hashPassword = _.get(result, 'password');
 
-				const isMatch = bcrypt.compareSync(password, hashPassword);
+                const hashPassword = _.get(result, 'password');
 
-				
-				if(!isMatch){
+                const isMatch = bcrypt.compareSync(password, hashPassword);
 
-					return reject({message: "Login Error."});
-				}
 
-				// user login successful let creat new token save to token collection.
+                if (!isMatch) {
 
-				const userId = result._id;
+                    return reject({message: "Login Error."});
+                }
 
-				this.app.models.token.create(userId).then((token) => {
+                // user login successful let creat new token save to token collection.
 
-					token.user = result;
+                const userId = result._id;
 
-					return resolve(token);
+                this.app.models.token.create(userId).then((token) => {
 
-				}).catch(err => {
+                    token.user = result;
 
-					return reject({message: "Login error"});
-				})
+                    return resolve(token);
 
-				
+                }).catch(err => {
 
+                    return reject({message: "Login error"});
+                })
 
 
-			});
+            });
 
 
+        })
 
 
+    }
 
-		})
-		
+    findUserByEmail(email, callback = () => {
+    }) {
 
-	}
 
-	findUserByEmail(email, callback = () => {}){
+        this.app.db.collection('users').findOne({email: email}, (err, result) => {
 
+            if (err || !result) {
 
-		this.app.db.collection('users').findOne({email: email}, (err, result) => {
+                return callback({message: "User not found."})
+            }
 
-			if(err || !result){
+            return callback(null, result);
 
-				return callback({message: "User not found."})
-			}
+        });
 
-			return callback(null, result);
 
-		});
+    }
 
+    load(id) {
 
-	}
-	load(id){
 
+        id = `${id}`;
 
-		id = `${id}`;
-		
-		return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
 
-			// find in cache if found we return and dont nee to query db
+            // find in cache if found we return and dont nee to query db
 
-			const userInCache = this.users.get(id);
+            const userInCache = this.users.get(id);
 
-		
 
-			if(userInCache){
-				return resolve(userInCache);
-			}
+            if (userInCache) {
+                return resolve(userInCache);
+            }
 
-			// if not found then we start query db
-			this.findUserById(id, (err, user) => {
+            // if not found then we start query db
+            this.findUserById(id, (err, user) => {
 
-				if(!err && user){
+                if (!err && user) {
 
-				
-					this.users = this.users.set(id, user);
-				}
 
-				return err ? reject(err) : resolve(user);
+                    this.users = this.users.set(id, user);
+                }
 
-			})
+                return err ? reject(err) : resolve(user);
 
-			
-		})
-	}
+            })
 
-	findUserById(id, callback = () => {}){
 
-		//console.log("Begin query in database");
+        })
+    }
 
-		if(!id){
-			return callback({message: "User not found"}, null);
-		}
+    findUserById(id, callback = () => {
+    }) {
 
+        //console.log("Begin query in database");
 
-		const userId = new ObjectID(id);
+        if (!id) {
+            return callback({message: "User not found"}, null);
+        }
 
-		this.app.db.collection('users').findOne({_id: userId}, (err, result) => {
 
+        const userId = new ObjectID(id);
 
-			if(err || !result){
+        this.app.db.collection('users').findOne({_id: userId}, (err, result) => {
 
-				return callback({message: "User not found"});
-			}
-			return callback(null, result);
 
-		});
-	}
+            if (err || !result) {
 
-	beforeSave(user, callback = () => {}){
+                return callback({message: "User not found"});
+            }
+            return callback(null, result);
 
+        });
+    }
 
-		// first is validate user object before save to user collection.
+    beforeSave(user, callback = () => {
+    }) {
 
-		let errors = [];
 
+        // first is validate user object before save to user collection.
 
-		const fields = ['name', 'email', 'password'];
-		const validations = {
-			name: {
-				errorMesage: 'Name is required',
-				do: () => {
+        let errors = [];
 
-					const name = _.get(user, 'name', '');
 
-					return name.length;
-				}
-			},
-			email: {
-				errorMesage: 'Email is not correct',
-				do: () => {
+        const fields = ['name', 'email', 'password'];
+        const validations = {
+            name: {
+                errorMesage: 'Name is required',
+                do: () => {
 
-					const email = _.get(user, 'email', '');
+                    const name = _.get(user, 'name', '');
 
-					if(!email.length || !isEmail(email)){
-						return false;
-					}
+                    return name.length;
+                }
+            },
+            email: {
+                errorMesage: 'Email is not correct',
+                do: () => {
 
+                    const email = _.get(user, 'email', '');
 
-					return true;
-				}
-			},
-			password: {
-				errorMesage: 'Password is required and more than 3 characters',
-				do: () => {
-					const password = _.get(user, 'password', '');
+                    if (!email.length || !isEmail(email)) {
+                        return false;
+                    }
 
-					if(!password.length || password.length < 3){
 
-						return false;
-					}
+                    return true;
+                }
+            },
+            password: {
+                errorMesage: 'Password is required and more than 3 characters',
+                do: () => {
+                    const password = _.get(user, 'password', '');
 
-					return true;
-				}
-			}
-		}
+                    if (!password.length || password.length < 3) {
 
+                        return false;
+                    }
 
-		// loop all fields to check if valid or not.
-		fields.forEach((field) => {
+                    return true;
+                }
+            }
+        }
 
 
-			const fieldValidation = _.get(validations, field);
+        // loop all fields to check if valid or not.
+        fields.forEach((field) => {
 
-			if(fieldValidation){
 
-				// do check/
+            const fieldValidation = _.get(validations, field);
 
-				const isValid = fieldValidation.do();
-				const msg = fieldValidation.errorMesage;
+            if (fieldValidation) {
 
-				if(!isValid){
-					errors.push(msg);
-				}
-			}
+                // do check/
 
+                const isValid = fieldValidation.do();
+                const msg = fieldValidation.errorMesage;
 
-		});
+                if (!isValid) {
+                    errors.push(msg);
+                }
+            }
 
-		if(errors.length){
 
-			// this is not pass of the validation.
-			const err = _.join(errors, ',');
-			return callback(err, null);
-		}
+        });
 
-		// check email is exist in db or not
-		const email = _.toLower(_.trim(_.get(user, 'email','')));
+        if (errors.length) {
 
-		this.app.db.collection('users').findOne({email: email}, (err, result) => {
+            // this is not pass of the validation.
+            const err = _.join(errors, ',');
+            return callback(err, null);
+        }
 
-			if(err || result){
-				return callback({message: "Email is already exist"}, null);
-			}
+        // check email is exist in db or not
+        const email = _.toLower(_.trim(_.get(user, 'email', '')));
 
+        this.app.db.collection('users').findOne({email: email}, (err, result) => {
 
+            if (err || result) {
+                return callback({message: "Email is already exist"}, null);
+            }
 
-			// return callback with succes checked.
-			const password = _.get(user, 'password');
-			const hashPassword = bcrypt.hashSync(password, saltRound);
 
-			const userFormatted = {
-				name: `${_.trim(_.get(user, 'name'))}`,
-				email: email,
-				password: hashPassword,
-				created: new Date(),
-			};
+            // return callback with succes checked.
+            const password = _.get(user, 'password');
+            const hashPassword = bcrypt.hashSync(password, saltRound);
 
+            const userFormatted = {
+                name: `${_.trim(_.get(user, 'name'))}`,
+                email: email,
+                password: hashPassword,
+                created: new Date(),
+            };
 
-			return callback(null, userFormatted);
 
+            return callback(null, userFormatted);
 
-			
 
-		});
+        });
 
 
+    }
 
+    create(user) {
 
-	}
-	create(user){
+        const db = this.app.db;
 
-		const db = this.app.db;
+        console.log("User:", user)
 
-		console.log("User:", user)
+        return new Promise((resolve, reject) => {
 
-		return new Promise((resolve, reject) => {
 
+            this.beforeSave(user, (err, user) => {
 
-			this.beforeSave(user, (err, user) => {
 
+                console.log("After validation: ", err, user);
 
-				console.log("After validation: ", err, user);
 
+                if (err) {
+                    return reject(err);
+                }
 
-					if(err){
-						return reject(err);
-					}
 
+                // insert new user object to users collections
 
-					// insert new user object to users collections
+                db.collection('users').insertOne(user, (err, info) => {
 
-					db.collection('users').insertOne(user, (err, info) => {
 
+                    // check if error return error to user
+                    if (err) {
+                        return reject({message: "An error saving user."});
+                    }
 
-						// check if error return error to user
-						if(err){
-							return reject({message: "An error saving user."});
-						}
-						
-						// otherwise return user object to user.
+                    // otherwise return user object to user.
 
-						const userId = _.get(user, '_id').toString(); // this is OBJET ID
+                    const userId = _.get(user, '_id').toString(); // this is OBJET ID
 
 
-						this.users = this.users.set(userId,user);
+                    this.users = this.users.set(userId, user);
 
-						return resolve(user);
+                    return resolve(user);
 
-					});
+                });
 
-			});
+            });
 
 
-		});
-	}
+        });
+    }
 }
