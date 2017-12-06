@@ -9,7 +9,61 @@ export default class Message {
         this.messages = new OrderedMap();
     }
 
+    getChannelMessages(channelId, limit = 50, offset = 0){
 
+        return new Promise((resolve, reject) => {
+
+            channelId = new ObjectID(channelId);
+
+            const query = [
+                {
+
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                {
+                    $match: {
+                        'channelId': {$eq: channelId},
+                    },
+                },
+                {
+                    $project: {
+                        _id: true,
+                        channelId: true,
+                        user: {_id: true, name: true, created: true},
+                        userId: true,
+                        body: true,
+                        created: true,
+                    }
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $skip: offset,
+                },
+                {
+                    $sort: {created: -1}
+                }
+
+            ];
+
+
+            this.app.db.collection('messages').aggregate(query, (err, results) => {
+
+                
+
+                return err ? reject(err): resolve(results)
+
+            });
+
+
+        })
+    }
     create(obj) {
 
 
@@ -37,6 +91,14 @@ export default class Message {
                     return reject(err);
                 }
 
+
+                // let update lastMessgage field to channel
+                this.app.db.collection('channels').findOneAndUpdate({_id: channelId}, {
+                    $set: {
+                        lastMessage: _.get(message, 'body', ''),
+                        updated: new Date(),
+                    }
+                })
 
                 this.app.models.user.load(_.toString(userId)).then((user) => {
 

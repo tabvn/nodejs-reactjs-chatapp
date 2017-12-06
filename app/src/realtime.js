@@ -47,26 +47,8 @@ export default class Realtime {
 
             case 'message_added':
 
-                let user = _.get(payload, 'user');
-
-
-                // add user to cache
-                user = store.addUserToCache(user);
-
-                const messageObject = {
-                    _id: payload._id,
-                    body: _.get(payload, 'body', ''),
-                    userId: _.get(payload, 'userId'),
-                    channelId: _.get(payload, 'channelId'),
-                    created: _.get(payload, 'created', new Date()),
-                    me: currentUserId === _.toString(_.get(payload, 'userId')),
-                    user: user,
-
-                };
-
-                console.log("MessageObject: ", messageObject);
-
-                store.setMessage(messageObject);
+                    
+                    this.onAddMessage(payload);
 
                 break;
 
@@ -85,11 +67,41 @@ export default class Realtime {
 
     }
 
+    onAddMessage(payload){
+
+        const store = this.store;
+        const currentUser = store.getCurrentUser();
+        const currentUserId = _.toString(_.get(currentUser, '_id'));
+
+        let user = _.get(payload, 'user');
+
+
+        // add user to cache
+        user = store.addUserToCache(user);
+
+        const messageObject = {
+            _id: payload._id,
+            body: _.get(payload, 'body', ''),
+            userId: _.get(payload, 'userId'),
+            channelId: _.get(payload, 'channelId'),
+            created: _.get(payload, 'created', new Date()),
+            me: currentUserId === _.toString(_.get(payload, 'userId')),
+            user: user,
+
+        };
+
+
+
+
+        store.setMessage(messageObject);
+
+    }
+
     onAddChannel(payload) {
 
         const store = this.store;
 
-        const channelId = `${payload._id}`;
+        const channelId = _.toString(_.get(payload, '_id'));
         const userId = `${payload.userId}`;
 
         const users = _.get(payload, 'users', []);
@@ -104,6 +116,8 @@ export default class Realtime {
             messages: new OrderedMap(),
             userId: userId,
             created: new Date(),
+            
+
         };
 
         _.each(users, (user) => {
@@ -118,6 +132,17 @@ export default class Realtime {
 
 
         });
+
+
+
+        const channelMessages = store.messages.filter((m) => _.toString(m.channelId)=== channelId);
+
+        channelMessages.forEach((msg) => {
+
+            const msgId = _.toString(_.get(msg, '_id'));
+            channel.messages = channel.messages.set(msgId, true);
+
+        })
 
 
         store.addChannel(channelId, channel);

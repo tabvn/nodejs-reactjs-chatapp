@@ -25,7 +25,39 @@ export default class Store {
 
         this.realtime = new Realtime(this);
 
+        this.fetchUserChannels();
 
+
+    }
+
+    fetchUserChannels(){
+
+        const userToken = this.getUserTokenId();
+
+        if(userToken){
+
+
+            const options = {
+                headers: {
+                    authorization: userToken,
+                }
+            }
+
+            this.service.get(`api/me/channels`, options).then((response) => {
+
+                const channels = response.data;
+
+                _.each(channels, (c) => {
+
+                    this.realtime.onAddChannel(c);
+                });
+
+
+            }).catch((err) => {
+
+                console.log("An error fetching user channels", err);
+            })
+        }
     }
 
     addUserToCache(user) {
@@ -193,6 +225,12 @@ export default class Store {
 
     }
 
+    clearCacheData(){
+
+        this.channels = this.channels.clear();
+        this.messages = this.messages.clear();
+        this.users = this.users.clear();
+    }
     signOut() {
 
         const userId = `${_.get(this.user, '_id', null)}`;
@@ -200,6 +238,8 @@ export default class Store {
         this.user = null;
         localStorage.removeItem('me');
         localStorage.removeItem('token');
+
+        this.clearCacheData();
 
         if (userId) {
             this.users = this.users.remove(userId);
@@ -238,6 +278,10 @@ export default class Store {
                 // call to realtime and connect again to socket server with this user
 
                 this.realtime.connect();
+
+                // begin fetching user's channels
+
+                this.fetchUserChannels();
 
                 //console.log("Got user login callback from the server: ", accessToken);
 
@@ -309,12 +353,41 @@ export default class Store {
         return this.user;
     }
 
+
+    fetchChannelMessages(channelId){
+
+        if(channelId){
+
+            this.service.get(`api/channels/${channelId}/messages`).then((response) => {
+
+
+                    const messages = response.data;
+
+                    _.each(messages, (message) => {
+
+                            this.realtime.onAddMessage(message);
+
+                    });
+
+
+
+
+            }).catch((err) => {
+
+                console.log("An error fetching channel 's messages", err);
+            })
+        }
+    }
     setActiveChannelId(id) {
 
         this.activeChannelId = id;
+
+        this.fetchChannelMessages(id);
+
         this.update();
 
     }
+
 
     getActiveChannel() {
 
@@ -332,6 +405,7 @@ export default class Store {
 
         if (channel) {
             channel.messages = channel.messages.set(id, true);
+            channel.lastMesage = _.get(message, 'body', '');
         } else {
 
             // fetch to the server with channel info
@@ -474,7 +548,7 @@ export default class Store {
         // we need to sort channel by date , the last one will list on top.
 
 
-        this.channels = this.channels.sort((a, b) => a.created < b.created);
+        this.channels = this.channels.sort((a, b) => a.updated < b.updated);
 
         return this.channels.valueSeq();
     }
