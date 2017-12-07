@@ -247,10 +247,14 @@ body {
       .chanels .chanel .chanel-info h2 {
         font-size: 13px;
         font-weight: 400;
-        white-space: nowrap; }
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden; }
       .chanels .chanel .chanel-info p {
         font-size: 12px;
-        white-space: nowrap; }
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden; }
     .chanels .chanel.active {
       background: rgba(0, 0, 0, 0.05); }
     .chanels .chanel.notify .chanel-info p {
