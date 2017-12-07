@@ -28,8 +28,28 @@ export default class Messenger extends Component {
         this.scrollMessagesToBottom = this.scrollMessagesToBottom.bind(this)
         this._onCreateChannel = this._onCreateChannel.bind(this);
         this.renderChannelTitle = this.renderChannelTitle.bind(this)
+        this.renderChannelAvatars = this.renderChannelAvatars.bind(this);
     }
 
+    renderChannelAvatars(channel){
+        const {store} = this.props;
+
+        const members = store.getMembersFromChannel(channel);
+
+        const maxDisplay = 4;
+        const total = members.size > maxDisplay ? maxDisplay : members.size;
+
+        const avatars = members.map((user, index) => {
+
+
+
+            return index < maxDisplay ?  <img src={_.get(user, 'avatar')} alt={_.get(user, 'name')} /> : null
+
+        });
+
+
+        return <div className={classNames('channel-avatars', `channel-avatars-${total}`)}>{avatars}</div>
+    }
     renderChannelTitle(channel = null) {
 
         if (!channel) {
@@ -270,9 +290,9 @@ export default class Messenger extends Component {
                                         store.setActiveChannelId(channel._id);
 
                                     }} key={channel._id}
-                                         className={classNames('chanel', {'active': _.get(activeChannel, '_id') === _.get(channel, '_id', null)})}>
+                                         className={classNames('chanel', {'notify': _.get(channel, 'notify') === true},{'active': _.get(activeChannel, '_id') === _.get(channel, '_id', null)})}>
                                         <div className="user-image">
-                                            <img src={avatar} alt=""/>
+                                           {this.renderChannelAvatars(channel)}
                                         </div>
                                         <div className="chanel-info">
                                             {this.renderChannelTitle(channel)}

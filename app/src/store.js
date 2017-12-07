@@ -53,6 +53,11 @@ export default class Store {
                 });
 
 
+                const firstChannelId = _.get(channels, '[0]._id', null);
+
+                this.fetchChannelMessages(firstChannelId);
+
+
             }).catch((err) => {
 
                 console.log("An error fetching user channels", err);
@@ -356,10 +361,23 @@ export default class Store {
 
     fetchChannelMessages(channelId){
 
-        if(channelId){
 
-            this.service.get(`api/channels/${channelId}/messages`).then((response) => {
+        let channel = this.channels.get(channelId);
 
+        if (channel && !_.get(channel, 'isFetchedMessages')){
+
+            const token = _.get(this.token, '_id');//this.token._id;
+            const options = {
+                headers: {
+                    authorization: token,
+                }
+            }
+
+             this.service.get(`api/channels/${channelId}/messages`, options).then((response) => {
+
+
+
+                    channel.isFetchedMessages = true;
 
                     const messages = response.data;
 
@@ -370,13 +388,19 @@ export default class Store {
                     });
 
 
+                    this.channels = this.channels.set(channelId, channel);
+
+
 
 
             }).catch((err) => {
 
                 console.log("An error fetching channel 's messages", err);
             })
+
+
         }
+        
     }
     setActiveChannelId(id) {
 
@@ -396,7 +420,7 @@ export default class Store {
 
     }
 
-    setMessage(message) {
+    setMessage(message, notify = false) {
 
         const id = _.toString(_.get(message, '_id'));
         this.messages = this.messages.set(id, message);
@@ -405,7 +429,10 @@ export default class Store {
 
         if (channel) {
             channel.messages = channel.messages.set(id, true);
-            channel.lastMesage = _.get(message, 'body', '');
+            channel.lastMessage = _.get(message, 'body', '');
+            channel.notify = notify;
+
+            this.channels = this.channels.set(channelId, channel);
         } else {
 
             // fetch to the server with channel info

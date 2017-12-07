@@ -180,9 +180,65 @@ body {
     .chanels .chanel .user-image {
       width: 30px; }
       .chanels .chanel .user-image img {
+        max-width: 100%; }
+      .chanels .chanel .user-image .channel-avatars {
+        overflow: hidden;
         width: 30px;
         height: 30px;
-        border-radius: 50%; }
+        border-radius: 50%;
+        background-color: #ccc;
+        position: relative; }
+        .chanels .chanel .user-image .channel-avatars.channel-avatars-1 img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%; }
+        .chanels .chanel .user-image .channel-avatars.channel-avatars-2 img {
+          width: 50%;
+          height: 100%;
+          position: absolute;
+          right: 0;
+          top: 0; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-2 img:first-child {
+            left: 0;
+            top: 0; }
+        .chanels .chanel .user-image .channel-avatars.channel-avatars-3 img {
+          position: absolute;
+          width: 50%;
+          height: 50%;
+          right: 0;
+          top: 0; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-3 img:first-child {
+            left: 0;
+            top: 0;
+            width: 50%;
+            height: 100%; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-3 img:last-child {
+            bottom: 0;
+            right: 0;
+            top: 15px;
+            width: 50%;
+            height: 50%; }
+        .chanels .chanel .user-image .channel-avatars.channel-avatars-4 img {
+          position: absolute;
+          width: 50%;
+          height: 50%;
+          right: 0;
+          top: 0; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-4 img:first-child {
+            left: 0;
+            top: 0;
+            width: 50%;
+            height: 100%; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-4 img:nth-child(3n) {
+            bottom: 0;
+            right: 0;
+            top: 15px;
+            width: 50%;
+            height: 50%; }
+          .chanels .chanel .user-image .channel-avatars.channel-avatars-4 img:last-child {
+            left: 0;
+            bottom: 0;
+            top: 15px; }
     .chanels .chanel .chanel-info {
       flex-grow: 1;
       padding-left: 8px;
@@ -197,6 +253,8 @@ body {
         white-space: nowrap; }
     .chanels .chanel.active {
       background: rgba(0, 0, 0, 0.05); }
+    .chanels .chanel.notify .chanel-info p {
+      color: #2ecc71; }
 
 .members .member {
   display: flex;

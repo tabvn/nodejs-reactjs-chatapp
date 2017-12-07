@@ -47,8 +47,10 @@ export default class Realtime {
 
             case 'message_added':
 
-                    
-                    this.onAddMessage(payload);
+                    const activeChannel = store.getActiveChannel();
+
+                    let notify = _.get(activeChannel, '_id') !== _.get(payload, 'channelId') && currentUserId !== _.get(payload, 'userId');
+                    this.onAddMessage(payload, notify);
 
                 break;
 
@@ -67,7 +69,7 @@ export default class Realtime {
 
     }
 
-    onAddMessage(payload){
+    onAddMessage(payload, notify = false){
 
         const store = this.store;
         const currentUser = store.getCurrentUser();
@@ -92,8 +94,9 @@ export default class Realtime {
 
 
 
+        
 
-        store.setMessage(messageObject);
+        store.setMessage(messageObject, notify);
 
     }
 

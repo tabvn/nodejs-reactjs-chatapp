@@ -228,8 +228,22 @@ export default class AppRouter {
          app.get('/api/channels/:id/messages', (req, res, next) => {
 
 
+             let tokenId = req.get('authorization');
 
-                // make sure user are logged in
+            if (!tokenId) {
+                // get token from query
+
+                tokenId = _.get(req, 'query.auth');
+            }
+
+
+            app.models.token.loadTokenAndUser(tokenId).then((token) => {
+
+                
+                const userId = token.userId;
+
+
+                    // make sure user are logged in
                 // check if this user is inside of channel members. other retun 401.
 
                 let filter = _.get(req, 'query.filter',null);
@@ -243,16 +257,61 @@ export default class AppRouter {
                 const limit = _.get(filter, 'limit', 50);
                 const offset = _.get(filter, 'offset', 0);
 
-            
-                this.app.models.message.getChannelMessages(channelId, limit, offset).then((messages) => {
 
 
-                    return res.status(200).json(messages);
+                // load channel 
+
+                this.app.models.channel.load(channelId).then((c) => {
+
+
+                    const memberIds = _.get(c, 'members');
+
+                    const members = [];
+
+                    _.each(memberIds, (id) => {
+                        members.push(_.toString(id));
+                    })
+
+
+                    if (!_.includes(members, _.toString(userId))){
+
+                         return res.status(401).json({error: {message: "Access denied"}});
+                    }
+
+                    this.app.models.message.getChannelMessages(channelId, limit, offset).then((messages) => {
+
+
+                        return res.status(200).json(messages);
+
+                    }).catch((err) => {
+
+                        return res.status(404).json({error: {message: "Not found."}});
+                    })
+
+
+
 
                 }).catch((err) => {
 
-                    return res.status(404).json({error: {message: "Not found."}});
+                     return res.status(404).json({error: {message: "Not found."}});
+
                 })
+            
+                
+
+
+
+
+
+            }).catch((err) => {
+
+
+                return res.status(401).json({error: {message: "Access denied"}});
+
+
+            });
+
+                
 
          });
 

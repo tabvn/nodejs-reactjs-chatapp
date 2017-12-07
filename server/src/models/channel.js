@@ -65,6 +65,9 @@ export default class Channel {
             // let find in db
 
             this.findById(id).then((c) => {
+
+                this.channels = this.channels.set(id, c);
+                
                 return resolve(c);
 
             }).catch((err) => {

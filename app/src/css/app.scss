@@ -196,9 +196,92 @@ body{
 		.user-image{
 			width: 30px;
 			img{
+				max-width: 100%;
+			}
+			.channel-avatars{
+				overflow: hidden;
 				width: 30px;
 				height: 30px;
 				border-radius: 50%;
+				background-color: #ccc;
+				position: relative;
+
+				&.channel-avatars-1{
+					img{
+						width: 100%;
+						height: 100%;
+						border-radius: 50%;
+					}
+				}
+				&.channel-avatars-2{
+
+					img{
+						width: 50%;
+						height: 100%;
+						position: absolute;
+						right: 0;
+						top: 0;
+						&:first-child{
+							left: 0;
+							top: 0;
+						}
+					}
+				}
+				&.channel-avatars-3{
+
+					img{
+						position: absolute;
+						width: 50%;
+						height: 50%;
+						right: 0;
+						top: 0;
+						&:first-child{
+							left: 0;
+							top: 0;
+							width: 50%;
+							height: 100%;
+						}
+						&:last-child{
+							bottom: 0;
+							right: 0;
+							top: 15px;
+							width: 50%;
+							height: 50%;
+						}
+
+					}
+				}
+				&.channel-avatars-4{
+					img{
+						position: absolute;
+						width: 50%;
+						height: 50%;
+						right: 0;
+						top: 0;
+						&:first-child{
+							left: 0;
+							top: 0;
+							width: 50%;
+							height: 100%;
+						}
+						&:nth-child(3n){
+							bottom: 0;
+							right: 0;
+							top: 15px;
+							width: 50%;
+							height: 50%;
+						}
+						&:last-child{
+							
+
+							left: 0;
+							bottom: 0;
+							top: 15px;
+						}
+
+
+					}
+				}
 			}
 		}
 		.chanel-info{
@@ -218,6 +301,13 @@ body{
 		}
 		&.active{
 			background: rgba(0, 0 ,0, 0.05);
+		}
+		&.notify{
+			.chanel-info{
+				p{
+					color: $primary-color;
+				}
+			}
 		}
 	}
 }
