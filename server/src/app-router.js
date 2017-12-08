@@ -36,7 +36,7 @@ export default class AppRouter {
             return res.json({
 
                 started: moment(START_TIME).fromNow(),
-            })
+            });
         });
 
         /**
@@ -220,111 +220,12 @@ export default class AppRouter {
         });
 
 
-         /**
+        /**
          * @endpoint: /api/channels/:id/messages
          * @method: GET
          **/
 
-         app.get('/api/channels/:id/messages', (req, res, next) => {
-
-
-             let tokenId = req.get('authorization');
-
-            if (!tokenId) {
-                // get token from query
-
-                tokenId = _.get(req, 'query.auth');
-            }
-
-
-            app.models.token.loadTokenAndUser(tokenId).then((token) => {
-
-                
-                const userId = token.userId;
-
-
-                    // make sure user are logged in
-                // check if this user is inside of channel members. other retun 401.
-
-                let filter = _.get(req, 'query.filter',null);
-                if(filter){
-
-                    filter = JSON.parse(filter);
-                    console.log(filter);
-                }
-
-                const channelId = _.toString(_.get(req, 'params.id'));
-                const limit = _.get(filter, 'limit', 50);
-                const offset = _.get(filter, 'offset', 0);
-
-
-
-                // load channel 
-
-                this.app.models.channel.load(channelId).then((c) => {
-
-
-                    const memberIds = _.get(c, 'members');
-
-                    const members = [];
-
-                    _.each(memberIds, (id) => {
-                        members.push(_.toString(id));
-                    })
-
-
-                    if (!_.includes(members, _.toString(userId))){
-
-                         return res.status(401).json({error: {message: "Access denied"}});
-                    }
-
-                    this.app.models.message.getChannelMessages(channelId, limit, offset).then((messages) => {
-
-
-                        return res.status(200).json(messages);
-
-                    }).catch((err) => {
-
-                        return res.status(404).json({error: {message: "Not found."}});
-                    })
-
-
-
-
-                }).catch((err) => {
-
-                     return res.status(404).json({error: {message: "Not found."}});
-
-                })
-            
-                
-
-
-
-
-
-            }).catch((err) => {
-
-
-                return res.status(401).json({error: {message: "Access denied"}});
-
-
-            });
-
-                
-
-         });
-
-
-
-
-        /**
-         * @endpoint: /api/me/channels
-         * @method: GET
-         **/
-
-         app.get('/api/me/channels', (req, res, next) => {
-
+        app.get('/api/channels/:id/messages', (req, res, next) => {
 
 
             let tokenId = req.get('authorization');
@@ -338,62 +239,148 @@ export default class AppRouter {
 
             app.models.token.loadTokenAndUser(tokenId).then((token) => {
 
-                
-                    const userId = token.userId;
+
+                const userId = token.userId;
 
 
+                // make sure user are logged in
+                // check if this user is inside of channel members. other retun 401.
 
-                    const query =  [
+                let filter = _.get(req, 'query.filter', null);
+                if (filter) {
 
-                        {
-                            $lookup: {
-                                from: 'users',
-                                localField: 'members',
-                                foreignField: '_id',
-                                as: 'users',
-                            }
-                        },
-                        {
-                            $match: {
-                                members: {$all: [userId]}
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: true,
-                                title: true,
-                                lastMessage: true,
-                                created: true,
-                                updated: true,
-                                userId: true,
-                                users: {
-                                    _id: true,
-                                    name: true,
-                                    created: true,
-                                },
-                                members: true,
-                            }
-                        },
-                        {
-                            $sort: {updated: -1, created: -1}
-                        },
-                        {
-                            $limit: 50,
-                        }
-                    ];
+                    filter = JSON.parse(filter);
+                    console.log(filter);
+                }
 
-                    app.models.channel.aggregate(query).then((channels) => {
+                const channelId = _.toString(_.get(req, 'params.id'));
+                const limit = _.get(filter, 'limit', 50);
+                const offset = _.get(filter, 'offset', 0);
 
 
-                        return res.status(200).json(channels);
+                // load channel
 
+                this.app.models.channel.load(channelId).then((c) => {
+
+
+                    const memberIds = _.get(c, 'members');
+
+                    const members = [];
+
+                    _.each(memberIds, (id) => {
+                        members.push(_.toString(id));
+                    })
+
+
+                    if (!_.includes(members, _.toString(userId))) {
+
+                        return res.status(401).json({error: {message: "Access denied"}});
+                    }
+
+                    this.app.models.message.getChannelMessages(channelId, limit, offset).then((messages) => {
+
+
+                        return res.status(200).json(messages);
 
                     }).catch((err) => {
 
                         return res.status(404).json({error: {message: "Not found."}});
                     })
 
-                    
+
+                }).catch((err) => {
+
+                    return res.status(404).json({error: {message: "Not found."}});
+
+                })
+
+
+            }).catch((err) => {
+
+
+                return res.status(401).json({error: {message: "Access denied"}});
+
+
+            });
+
+
+        });
+
+
+        /**
+         * @endpoint: /api/me/channels
+         * @method: GET
+         **/
+
+        app.get('/api/me/channels', (req, res, next) => {
+
+
+            let tokenId = req.get('authorization');
+
+            if (!tokenId) {
+                // get token from query
+
+                tokenId = _.get(req, 'query.auth');
+            }
+
+
+            app.models.token.loadTokenAndUser(tokenId).then((token) => {
+
+
+                const userId = token.userId;
+
+
+                const query = [
+
+                    {
+                        $lookup: {
+                            from: 'users',
+                            localField: 'members',
+                            foreignField: '_id',
+                            as: 'users',
+                        }
+                    },
+                    {
+                        $match: {
+                            members: {$all: [userId]}
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: true,
+                            title: true,
+                            lastMessage: true,
+                            created: true,
+                            updated: true,
+                            userId: true,
+                            users: {
+                                _id: true,
+                                name: true,
+                                created: true,
+                                online: true
+                            },
+                            members: true,
+                        }
+                    },
+                    {
+                        $sort: {updated: -1, created: -1}
+                    },
+                    {
+                        $limit: 50,
+                    }
+                ];
+
+                app.models.channel.aggregate(query).then((channels) => {
+
+
+                    return res.status(200).json(channels);
+
+
+                }).catch((err) => {
+
+                    return res.status(404).json({error: {message: "Not found."}});
+                })
+
 
             }).catch(err => {
 
@@ -403,18 +390,7 @@ export default class AppRouter {
             });
 
 
-            
-
-         })
-
-
-
-
-
-
-
-
-
+        })
 
 
     }

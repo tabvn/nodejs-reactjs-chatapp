@@ -16,6 +16,19 @@ export default class User {
 
     }
 
+    updateUserStatus(userId, isOnline = false){
+
+        return new Promise((resolve, reject) => {
+
+            const query = {_id: new ObjectID(userId)};
+            const updater = {$set: {online: isOnline}};
+            this.app.db.collection('users').update(query, updater, (err, info) => {
+                return err ? reject(err) : resolve(info);
+            });
+
+
+        })
+    }
 
     find(query = {}, options = {}) {
 

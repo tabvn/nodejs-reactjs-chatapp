@@ -34,6 +34,91 @@ export default class Connection {
 
     }
 
+    sendToMembers(userId, obj) {
+
+        const query = [
+            {
+                $match: {
+
+                    members: {$all: [new ObjectID(userId)]}
+                }
+            },
+            {
+
+                $lookup: {
+
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'users'
+                }
+            },
+            {
+                $unwind: {
+
+                    path: '$users'
+                }
+            },
+            {
+                $match: {'users.online': {$eq: true}}
+            },
+            {
+                $group: {
+
+                    _id: "$users._id"
+                }
+            }
+
+
+        ];
+
+
+        const users = [];
+
+
+        this.app.db.collection('channels').aggregate(query, (err, results) => {
+
+
+            console.log("found members array who is chattting with current user", results);
+            if (err === null && results) {
+
+                _.each(results, (result) => {
+
+
+                    const uid = _.toString(_.get(result, '_id'));
+                    if (uid) {
+                        users.push(uid);
+                    }
+                });
+
+
+                // this is list of all connections is chatting with current user
+                const memberConnections = this.connections.filter((con) => _.includes(users, _.toString(_.get(con, 'userId'))));
+                if (memberConnections.size) {
+
+                    memberConnections.forEach((connection, key) => {
+
+                        const ws = connection.ws;
+                        this.send(ws, obj);
+                    });
+                }
+
+
+            }
+        })
+    }
+
+    sendAll(obj) {
+
+
+        // send socket messages to all clients.
+
+        this.connections.forEach((con, key) => {
+            const ws = con.ws;
+
+            this.send(ws, obj);
+        });
+    }
 
     send(ws, obj) {
 
@@ -214,6 +299,16 @@ export default class Connection {
                         }
                         this.send(connection.ws, obj);
 
+                        //send to all socket clients connection
+
+                        const userIdString = _.toString(userId);
+                        this.sendToMembers(userIdString, {
+                            action: 'user_online',
+                            payload: userIdString,
+                        });
+
+                        this.app.models.user.updateUserStatus(userIdString, true);
+
 
                     }).catch((err) => {
 
@@ -278,9 +373,31 @@ export default class Connection {
                 //console.log("Someone disconnected to the server", socketId);
 
 
-                // let remove this socket client from the cache collection.
+                const closeConnection = this.connections.get(socketId);
+                const userId = _.toString(_.get(closeConnection, 'userId', null));
 
+                // let remove this socket client from the cache collection.
                 this.connections = this.connections.remove(socketId);
+
+                if (userId) {
+                    // now find all socket clients matching with userId
+
+                    const userConnections = this.connections.filter((con) => _.toString(_.get(con, 'userId')) === userId);
+                    if (userConnections.size === 0) {
+
+                        // this mean no more socket clients is online with this userId. now user is offline.
+
+                        this.sendToMembers(userId, {
+                            action: 'user_offline',
+                            payload: userId
+                        });
+
+                        // update user status into database
+
+                        this.app.models.user.updateUserStatus(userId, false);
+                    }
+                }
+
 
             });
         });

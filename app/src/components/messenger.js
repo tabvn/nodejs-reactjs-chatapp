@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import classNames from 'classnames'
-import avatar from '../images/avatar.png'
 import {OrderedMap} from 'immutable'
 import _ from 'lodash'
 import {ObjectID} from '../helpers/objectid'
@@ -43,7 +42,7 @@ export default class Messenger extends Component {
 
 
 
-            return index < maxDisplay ?  <img src={_.get(user, 'avatar')} alt={_.get(user, 'name')} /> : null
+            return index < maxDisplay ?  <img key={index} src={_.get(user, 'avatar')} alt={_.get(user, 'name')} /> : null
 
         });
 
@@ -322,8 +321,7 @@ export default class Messenger extends Component {
                                         </div>
                                         <div className="message-body">
                                             <div
-                                                className="message-author">{message.me ? 'You ' : _.get(message, 'user.name')}
-                                                says:
+                                                className="message-author">{message.me ? 'You ' : _.get(message, 'user.name')} says:
                                             </div>
                                             <div className="message-text">
                                                 {this.renderMessage(message)}
@@ -371,13 +369,16 @@ export default class Messenger extends Component {
                                 {members.map((member, key) => {
 
 
+                                    const isOnline = _.get(member, 'online', false);
+
                                     return (
                                         <div key={key} className="member">
                                             <div className="user-image">
                                                 <img src={_.get(member, 'avatar')} alt=""/>
+                                                <span className={classNames('user-status', {'online': isOnline})} />
                                             </div>
                                             <div className="member-info">
-                                                <h2>{member.name}</h2>
+                                                <h2>{member.name} - <span className={classNames('user-status', {'online': isOnline})}>{isOnline ? 'Online': 'Offline'}</span> </h2>
                                                 <p>Joined: {moment(member.created).fromNow()}</p>
                                             </div>
 

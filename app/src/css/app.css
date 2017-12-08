@@ -265,11 +265,26 @@ body {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   padding: 8px; }
   .members .member .user-image {
-    width: 30px; }
+    width: 30px;
+    position: relative; }
     .members .member .user-image img {
       width: 30px;
       height: 30px;
       border-radius: 50%; }
+    .members .member .user-image .user-status {
+      width: 8px;
+      height: 8px;
+      display: block;
+      position: absolute;
+      right: 0;
+      bottom: 10px;
+      border: 1px solid #FFFFFF;
+      background: #cccccc;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      border-radius: 50%; }
+      .members .member .user-image .user-status.online {
+        background: #2ecc71; }
   .members .member .member-info {
     padding-left: 8px;
     flex-grow: 1; }
@@ -427,5 +442,16 @@ h2.title {
     background: #e74c3c;
     color: #FFF;
     border-color: #e74c3c; }
+
+.user-status {
+  font-size: 10px;
+  color: #2c3e50; }
+  .user-status.online {
+    color: #2ecc71; }
+
+.app-warning-state {
+  font-size: 10px;
+  padding: 0 10px;
+  color: #e74c3c; }
 
 /*# sourceMappingURL=app.css.map */

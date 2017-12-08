@@ -12,8 +12,26 @@ export default class Realtime {
         this.isConnected = false;
 
         this.connect();
+        this.reconnect();
     }
 
+
+    reconnect(){
+
+        const store = this.store;
+
+        window.setInterval(()=>{
+
+            const user = store.getCurrentUser();
+            if(user && !this.isConnected){
+
+                console.log("try reconnecting...");
+
+                this.connect();
+            }
+
+        }, 3000)
+    }
 
     decodeMessage(msg) {
 
@@ -45,6 +63,16 @@ export default class Realtime {
 
         switch (action) {
 
+            case 'user_offline':
+
+                this.onUpdateUserStatus(payload, false);
+                break;
+            case 'user_online':
+
+                    const isOnline = true;
+                    this.onUpdateUserStatus(payload, isOnline);
+
+                break;
             case 'message_added':
 
                     const activeChannel = store.getActiveChannel();
@@ -69,6 +97,26 @@ export default class Realtime {
 
     }
 
+    onUpdateUserStatus(userId, isOnline = false){
+
+        const store = this.store;
+
+
+        store.users = store.users.update(userId, (user) => {
+
+
+           if(user){
+               user.online = isOnline;
+
+           }
+
+            return user;
+
+        });
+
+        store.update()
+
+    }
     onAddMessage(payload, notify = false){
 
         const store = this.store;
@@ -156,7 +204,7 @@ export default class Realtime {
 
         const isConnected = this.isConnected;
 
-        if (isConnected) {
+        if (this.ws && isConnected) {
 
             const msgString = JSON.stringify(msg);
 
@@ -218,7 +266,14 @@ export default class Realtime {
 
             //console.log("You disconnected!!!");
             this.isConnected = false;
+            //this.store.update();
 
+        }
+
+        ws.onerror = () => {
+
+            this.isConnected = false;
+            this.store.update();
         }
 
 

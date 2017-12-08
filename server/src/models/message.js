@@ -31,10 +31,21 @@ export default class Message {
                     },
                 },
                 {
+
                     $project: {
                         _id: true,
                         channelId: true,
-                        user: {_id: true, name: true, created: true},
+                        user: {$arrayElemAt: ['$user', 0]},
+                        userId: true,
+                        body: true,
+                        created: true,
+                    }
+                },
+                {
+                    $project: {
+                        _id: true,
+                        channelId: true,
+                        user: {_id: true, name: true, created: true, online: true},
                         userId: true,
                         body: true,
                         created: true,

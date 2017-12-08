@@ -30,6 +30,10 @@ export default class Store {
 
     }
 
+    isConnected(){
+
+        return this.realtime.isConnected;
+    }
     fetchUserChannels(){
 
         const userToken = this.getUserTokenId();
