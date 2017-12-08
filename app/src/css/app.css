@@ -151,7 +151,7 @@ body {
   .messages .message {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin: 15px; }
     .messages .message .message-user-image img {
       width: 20px;
@@ -164,7 +164,7 @@ body {
         padding: 10px;
         border-radius: 10px; }
     .messages .message.me {
-      justify-content: flex-start; }
+      justify-content: flex-end; }
       .messages .message.me .message-body .message-text {
         background: #2ecc71;
         color: #FFF; }

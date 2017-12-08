@@ -16,9 +16,21 @@ export default class User {
 
     }
 
-    updateUserStatus(userId, isOnline = false){
+    updateUserStatus(userId, isOnline = false) {
 
         return new Promise((resolve, reject) => {
+
+            // first update status of cache this.users
+
+
+            this.users = this.users.update(userId, (user) => {
+
+                if (user) {
+                    user.online = isOnline;
+                }
+
+                return user;
+            });
 
             const query = {_id: new ObjectID(userId)};
             const updater = {$set: {online: isOnline}};

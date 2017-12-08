@@ -44,20 +44,24 @@ export default class UserMenu extends Component{
 
 		const {store} = this.props;
 
-		return <div className="user-menu" ref={(ref) => this.ref = ref}>
-				<h2>My menu</h2>
-				<ul className="menu">
-					<li><button type="button">My Profile</button></li>
-					<li><button type="button">Change Password</button></li>
-					<li><button onClick={() => {
-						if(this.props.onClose){
-							this.props.onClose();
-						}
-						
-						store.signOut();
+		const user = store.getCurrentUser();
 
-					}} type="button">Sign Out</button></li>
-				</ul>
+		return <div className="user-menu" ref={(ref) => this.ref = ref}>
+			{user ? <div>
+
+                <h2>My menu</h2>
+                <ul className="menu">
+                    <li><button onClick={() => {
+                        if(this.props.onClose){
+                            this.props.onClose();
+                        }
+
+                        store.signOut();
+
+                    }} type="button">Sign Out</button></li>
+                </ul>
+
+				</div> : null }
 
 		</div>
 	}

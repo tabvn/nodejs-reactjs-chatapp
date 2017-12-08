@@ -1,4 +1,4 @@
-import moment from 'moment'
+import _ from 'lodash'
 import {ObjectID} from 'mongodb'
 import {OrderedMap} from 'immutable'
 
@@ -13,7 +13,23 @@ export default class Token{
 
 	}
 
+    logout(token){
 
+		return new Promise((resolve, reject) => {
+
+            const tokenId = _.toString(token._id);
+            // to remove token from cache
+            this.tokens = this.tokens.remove(tokenId);
+            // we have to delete this token id from tokens collection
+
+            this.app.db.collection('tokens').remove({_id: new ObjectID(tokenId)}, (err, info) => {
+
+					return err ? reject(err) : resolve(info);
+            });
+
+		})
+
+	}
 	loadTokenAndUser(id){
 
 		return new Promise((resolve, reject) => {

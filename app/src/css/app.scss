@@ -153,7 +153,7 @@ body {
   .message {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin: 15px;
     .message-user-image {
       img {
@@ -175,7 +175,7 @@ body {
     }
 
     &.me {
-      justify-content: flex-start;
+      justify-content: flex-end;
       .message-body {
         .message-text {
           background: $primary-color;
