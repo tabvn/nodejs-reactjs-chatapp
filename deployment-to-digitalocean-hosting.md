@@ -169,7 +169,8 @@ sudo apt-get install build-essential
 ```
 
 
-## Nginx config sample
+## Nginx config sample:
+Nginx Websocket document: http://nginx.org/en/docs/http/websocket.html
 
 ```
 server {
