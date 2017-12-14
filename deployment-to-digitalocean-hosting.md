@@ -163,9 +163,28 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
 
 * Fixed issue of bcrypt on Ubuntu 16.04
 
-``
+```
 sudo apt-get install build-essential
+
 ```
 
+
+## Nginx config sample
+
+```
+server {
+        listen 80;
+        root /var/www/html;
+        location / {
+
+
+                proxy_pass http://127.0.0.1:3001;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+        }
+
+}
+```
 See Video: ...
 
