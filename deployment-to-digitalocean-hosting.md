@@ -95,7 +95,7 @@ We are using MongoDB for database in backend restful service so let install Mong
   ```
   sudo apt-get install -y mongodb-org
   ```
-* Start MongoDB
+* Start MongoDB (Port running default: 27017)
   ```
   sudo service mongod start
   
