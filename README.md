@@ -17,6 +17,15 @@ npm install
 ```
 npm run dev
 ```
+### Reactjs App development
+
+```
+cd app
+```
+
+```
+npm start
+```
 
 ## Tutorials
 * Checkout the video toturials list: https://www.youtube.com/playlist?list=PLFaW_8zE4amPaLyz5AyVT8B_wfOYwd8x8
