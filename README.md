@@ -24,7 +24,7 @@ npm run dev
 * Youtube Chanel: https://youtube.com/TabvnChanel
 
 
-## Deploy Node.js React.js to DigitalOcean
+## Deploy Node.js React.js to DigitalOcean.com Ubuntu 16.04 Cloud VPS 
 
 * <a href="https://github.com/tabvn/nodejs-reactjs-chatapp/blob/master/deployment-to-digitalocean-hosting.md">Document</a>
 * Video: https://www.youtube.com/watch?v=wJsH45eWNBo
