@@ -77,10 +77,10 @@ We are using nodejs for backend and will serve static files of react application
 We are using MongoDB for database in backend restful service so let install Mongodb by follow the documentation https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/ 
 * Import the public key used by the package management system 
 
-   ```
-   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
-   
-   ```
+  ```
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
+
+  ```
 * Create a list file for MongoDB (Ubuntu 16.04)
   ```
   echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.6 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
@@ -88,10 +88,24 @@ We are using MongoDB for database in backend restful service so let install Mong
   ```
 * Reload local package database
 
-```
-sudo apt-get update
-```
+  ```
+  sudo apt-get update
+  ```
 * Install the latest stable version of MongoDB 
-```
-sudo apt-get install -y mongodb-org
-```
+  ```
+  sudo apt-get install -y mongodb-org
+  ```
+* Start MongoDB
+  ```
+  sudo service mongod start
+  
+  ```
+* If You Want to Stop MongoDB
+  ```
+  sudo service mongod stop
+  ```
+* Or Restart MongoDB
+  ```
+  sudo service mongod restart
+  ```
+ 
