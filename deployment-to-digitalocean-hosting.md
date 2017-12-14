@@ -123,7 +123,7 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
   ```
   sudo apt-get install nginx
   ```
-* Start Nginx:  open your ip address ex: http://123.456.789 you should see "Welcome to nginx!"
+* Start Nginx:  open your ip address ex: http://123.456.789 you should see "Welcome to nginx!", all Nginx config in our cloud is in /etc/nginx/nginx.conf
   ```
   nginx
   ```
@@ -137,3 +137,29 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
   ```
   nginx -s reload
   ```
+* Close your CLoud command line by ``` exit ``` or cloud command line tab in terminal
+
+## Time to Deployment 
+
+* Download the chat app project at https://github.com/tabvn/nodejs-reactjs-chatapp , You can download the zip file and extract it on your own computer , or user fllow command
+  ```
+  git clone https://github.com/tabvn/nodejs-reactjs-chatapp.git chatApp
+  ```
+  ```
+  cd chatApp
+  ```
+  ```
+  cd server
+  ```
+  ```
+  npm install
+  ```
+ ```
+ cd ../app
+ ```
+ ```
+ npm install
+ ```
+
+See Video: ...
+
