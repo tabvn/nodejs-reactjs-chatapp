@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {OrderedMap} from 'immutable'
-
+import {websocketUrl} from './config'
 
 export default class Realtime {
 
@@ -235,7 +235,7 @@ export default class Realtime {
 
         //console.log("Begin connecting to server via websocket.");
 
-        const ws = new WebSocket('ws://localhost:3001');
+        const ws = new WebSocket(websocketUrl);
         this.ws = ws;
 
 

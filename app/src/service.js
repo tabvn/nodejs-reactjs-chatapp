@@ -1,7 +1,7 @@
 import axios from 'axios'
+import {apiUrl} from './config'
 
-
-const apiURL = 'http://localhost:3001';
+const apiURL = apiUrl;
 
 export default class Service{
 

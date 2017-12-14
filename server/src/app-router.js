@@ -25,19 +25,6 @@ export default class AppRouter {
         console.log("APp ROuter works!");
 
 
-        /**
-         * @endpoint: /
-         * @method: GET
-         **/
-
-        app.get('/', (req, res, next) => {
-
-
-            return res.json({
-
-                started: moment(START_TIME).fromNow(),
-            });
-        });
 
         /**
          * @endpoint: /api/users
@@ -80,6 +67,7 @@ export default class AppRouter {
 
 
             app.models.token.loadTokenAndUser(tokenId).then((token) => {
+                _.unset(token, 'user.password');
 
                 return res.json(token);
 

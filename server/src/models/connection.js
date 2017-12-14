@@ -79,7 +79,7 @@ export default class Connection {
         this.app.db.collection('channels').aggregate(query, (err, results) => {
 
 
-            console.log("found members array who is chattting with current user", results);
+           // console.log("found members array who is chattting with current user", results);
             if (err === null && results) {
 
                 _.each(results, (result) => {
@@ -267,7 +267,7 @@ export default class Connection {
 
                 });
 
-                console.log("Got new channel need to be created form client", channel);
+                //console.log("Got new channel need to be created form client", channel);
 
 
                 break;
