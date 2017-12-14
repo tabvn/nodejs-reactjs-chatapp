@@ -16,6 +16,21 @@ for price it is depend on how big of your project how many trafics to. for me i 
 * Add your SSH keys: you can genrate your ssh key on your computer and copy it to your vps and that mean when you login from ssh dont have to enter the password of root account any more, save your time and more security, if you would to know how to generate ssh key and use it on DigitalOcean hosting let see this <a href="https://www.digitalocean.com/community/tutorials/how-to-use-ssh-keys-with-digitalocean-droplets">article</a>
 * Droplet default is 1 if you want to setup mutiply droplets at once time let use it.
 * name of your droplet and click submit, just get a cup of coffee and wait a moment for DigitalOcean setup for you. until you see "Happy coding!" Your cloud vps is ready to use.
+* Check your email address that you did register in DigitalOcean you shold get an email notify about your VPS IP, root account and password.
+here is format of your email
+Droplet Name: [Name of your Droplet]
+IP Address: [your-vps-IP]
+Username: root
+Password: [your-root-password-generated-by-robot]
+* Login to your Cloud via terminal by use 
+  ```
+  ssh root@YOUR-IP-ADDREESS 
+  ```
+  now enter your root password that in your email. You will asking for change new password at the first time.
+  + Server will ask you current password again (this is password in your email)
+  + Enter new password
+  + Confirm password , and remember it for later. 
+  + Done and happy seting up your cloud.
 
 
 
