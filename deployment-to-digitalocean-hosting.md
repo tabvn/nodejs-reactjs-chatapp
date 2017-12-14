@@ -161,5 +161,7 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
    npm install
    ```
 
+* Recommend check this issue https://github.com/kelektiv/node.bcrypt.js/issues/432 to fix issue node.bcrypt.js on ubuntu Node.js v9: npm install --save bcrypt-nodejs && npm uninstall --save bcrypt
+
 See Video: ...
 
