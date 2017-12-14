@@ -38,16 +38,16 @@ This is very important step we need to do. so we need to reconfigure our firewal
 * I recommend open port only for 80,443, ssh (port 22), but it is depend on your project may need more port open for other service. in this project we need open port 80 for http access, 443 https (ssl) , and port 22 (for ssh login) that is ennough.
 * By default Firewall is inactive, you can check it by run command 
 ``` sudo ufw status ```
-* So let config FW allow those ports by 
+
   ```
-  sudo ufw allow 80
+  sudo ufw app list
+  ```
+* So let config FW allow those ports by
+  ```
+  sudo ufw allow 'Nginx Full'
   
   ```
   
-  ```
-  sudo ufw allow 443
-  
-  ```
   
   ```
   sudo ufw allow 'OpenSSH'
