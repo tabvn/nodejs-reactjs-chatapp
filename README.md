@@ -27,5 +27,5 @@ npm run dev
 ## Deploy Node.js React.js to DigitalOcean
 
 * <a href="https://github.com/tabvn/nodejs-reactjs-chatapp/blob/master/deployment-to-digitalocean-hosting.md">Document</a>
-* Video: 
+* Video: https://www.youtube.com/watch?v=wJsH45eWNBo
 
