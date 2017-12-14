@@ -154,12 +154,12 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
   ```
   npm install
   ```
- ```
- cd ../app
- ```
- ```
- npm install
- ```
+   ```
+   cd ../app
+   ```
+   ```
+   npm install
+   ```
 
 See Video: ...
 
