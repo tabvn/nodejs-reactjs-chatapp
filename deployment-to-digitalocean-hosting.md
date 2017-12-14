@@ -1,4 +1,4 @@
-# Deployment Reactjs,Nodejs Chat app to DigitalOcean hosting (Ubuntu Vps)
+# Deploy Reactjs,Nodejs Chat app to DigitalOcean hosting (Ubuntu Vps)
 
 ## Get DigitalOcean account
 
@@ -109,7 +109,7 @@ We are using MongoDB for database in backend restful service so let install Mong
   sudo service mongod restart
   ```
  
-## Install Nginx for Http Proxy serve. 
+## Install Nginx - Http Proxy Server. 
 Let me explain to you very simple why we do use Nginx for this Nodejs Web application. 
 Example: Our Chat app when we start it running on port 3000 that is default of Nodejs application running. we can change the port to 3001 or 3002, or 8080 ... so if you pointed your domain tabvn.com to Degital Ocean cloud vps so this case we can visit the chat app in http://tabvn.com:3000 
 so we need just see nodejs web app in default port 80 such at http://tabvn.com , that is why we use nginx. Just simple and i hope you unerstand :)
