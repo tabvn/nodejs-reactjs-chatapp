@@ -129,10 +129,10 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
   ```
 * Stop Nginx 
  
- ```
- nginx -s stop
- 
- ```
+   ```
+   nginx -s stop
+
+   ```
 * Reload Nginx
   ```
   nginx -s reload
