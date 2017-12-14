@@ -123,3 +123,17 @@ so we need just see nodejs web app in default port 80 such at http://tabvn.com ,
   ```
   sudo apt-get install nginx
   ```
+* Start Nginx:  open your ip address ex: http://123.456.789 you should see "Welcome to nginx!"
+  ```
+  nginx
+  ```
+* Stop Nginx 
+ 
+ ```
+ nginx -s stop
+ 
+ ```
+* Reload Nginx
+  ```
+  nginx -s reload
+  ```
