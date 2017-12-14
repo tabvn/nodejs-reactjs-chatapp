@@ -32,10 +32,45 @@ Password: [your-root-password-generated-by-robot]
   + Confirm password , and remember it for later. 
   + Done and happy seting up your cloud.
 
+## Configure Firewall on your Cloud
 
+This is very important step we need to do. so we need to reconfigure our firewall software to allow access to the service
+* I recommend open port only for 80,443, ssh (port 22), but it is depend on your project may need more port open for other service. in this project we need open port 80 for http access, 443 https (ssl) , and port 22 (for ssh login) that is ennough.
+* By default Firewall is inactive, you can check it by run command 
+``` sudo ufw status ```
+* So let config FW allow those ports by 
+  ```
+  sudo ufw allow 80
+  
+  ```
+  
+  ```
+  sudo ufw allow 443
+  
+  ```
+  
+  ```
+  sudo ufw allow 'OpenSSH'
+  
+  ```
+  
+  ```
+  sudo ufw enable
+  ```
 
+## Setup Nodejs on DegitalOcean Ubuntu 16.04 
+We are using nodejs for backend and will serve static files of react application build. So Nodejs is required
+* visit https://nodejs.org/en/download/package-manager/ to see the documentation
+* We use package management to install, here is command to install Node.js v9
 
+  ```
+  curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 
+  ```
+  ```
+  sudo apt-get install -y nodejs
+  ```
+* After successful Node.js installed we can check the version by typing in command line : ``` node -v ``` and you see see "v9.3.0" 
 
-
+## Setup Mongodb
 
